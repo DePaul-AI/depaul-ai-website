@@ -1,4 +1,6 @@
 import Image from "next/image";
+import LinkedinBadge from "./components/LinkedinBadge";
+import InstagramBadge from "./components/InstagramBadge";
 
 export default function Home() {
   return (
@@ -19,6 +21,11 @@ export default function Home() {
         <p className="text-5xl font-light tracking-[0.25em] uppercase text-white">
           Coming Soon
         </p>
+      </div>
+
+      <div className="flex gap-4">
+        <InstagramBadge username="depaul.ai"></InstagramBadge>
+        <LinkedinBadge username="depaulai"></LinkedinBadge>
       </div>
     </div>
   );
