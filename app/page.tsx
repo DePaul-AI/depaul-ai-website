@@ -19,7 +19,7 @@ export default function Home() {
 
       <div className="flex flex-col items-center gap-2 text-center">
         <p className="text-5xl font-light tracking-[0.25em] uppercase text-white">
-          Coming Soon
+          Coming Soon In Fall 2027
         </p>
       </div>
 
