@@ -14,7 +14,7 @@ export default function Home() {
         width={148}
         height={148}
         priority
-        className="rounded-3xl shadow-2xl"
+        className="rounded-4xl shadow-3xl"
       />
 
       <div className="flex flex-col items-center gap-2 text-center">
