@@ -1,0 +1,34 @@
+# Create the Slack app from this manifest:
+#   api.slack.com/apps → Create New App → From an app manifest → paste this.
+# Replace depaulai.org below if the site lives somewhere else.
+display_information:
+  name: DePaul AI Website
+  description: Update depaulai.org — events, countdown, news and theme — from Slack.
+  background_color: "#14100c"
+features:
+  bot_user:
+    display_name: website
+    always_online: true
+  slash_commands:
+    - command: /dai
+      url: https://depaulai.org/api/slack/commands
+      description: Update the website (events, posts, countdown, theme…)
+      usage_hint: "event | post | countdown | announce | link | theme | list"
+      should_escape: false
+  shortcuts:
+    - name: Post to website
+      type: message
+      callback_id: post_to_website
+      description: Turn this message into an update on depaulai.org
+oauth_config:
+  scopes:
+    bot:
+      - commands
+      - chat:write
+settings:
+  interactivity:
+    is_enabled: true
+    request_url: https://depaulai.org/api/slack/interactions
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false

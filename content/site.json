@@ -1,0 +1,25 @@
+{
+  "theme": "fall",
+  "hero": {
+    "title": "DePaul AI",
+    "tagline": "A student community at DePaul University exploring artificial intelligence — together."
+  },
+  "announcement": null,
+  "countdown": null,
+  "links": [
+    {
+      "id": "instagram",
+      "label": "Follow us on Instagram",
+      "url": "https://www.instagram.com/depaul.ai/"
+    },
+    {
+      "id": "linkedin",
+      "label": "Connect on LinkedIn",
+      "url": "https://linkedin.com/company/depaulai"
+    }
+  ],
+  "socials": {
+    "instagram": "depaul.ai",
+    "linkedin": "depaulai"
+  }
+}
