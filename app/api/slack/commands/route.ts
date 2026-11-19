@@ -1,7 +1,7 @@
 import { after } from "next/server";
 import { verifySlackRequest, channelAllowed, userAllowed } from "@/lib/slack/verify";
 import { notify, respond, siteUrl } from "@/lib/slack/api";
-import { clearSiteField, findItem, listBlocks, openModal, removeItem, resetLogo, setTheme } from "@/lib/slack/handlers";
+import { clearSiteField, findItem, listBlocks, openModal, pastListBlocks, removeItem, resetLogo, setTheme } from "@/lib/slack/handlers";
 import { THEMES, THEME_IDS, type ThemeId } from "@/themes";
 
 /**
@@ -20,6 +20,7 @@ const HELP = [
   `\`/dai theme\` — switch the seasonal theme (${THEME_IDS.join(", ")})`,
   "`/dai logo` — upload the logo for a theme (`/dai logo reset` to use the built-in one)",
   "`/dai list` — see what's on the site, edit or remove things",
+  "`/dai list past` — fix or remove past events (add words to search, e.g. `/dai list past hack night`)",
   "",
   "_Tip: on any message, choose ⋯ → *Post to website* to turn it into an update._",
 ].join("\n");
@@ -100,9 +101,12 @@ export async function POST(request: Request) {
         return empty();
       case "list":
         // Reading from GitHub can be slow, so send the list via response_url.
+        // `/dai list past [words]` lists (and searches) past events instead.
         after(async () => {
           try {
-            await respond(responseUrl, { text: "What's on the website", blocks: await listBlocks() });
+            const [first, ...search] = rest;
+            const blocks = first?.toLowerCase() === "past" ? await pastListBlocks(search.join(" ")) : await listBlocks();
+            await respond(responseUrl, { text: "What's on the website", blocks });
           } catch (err) {
             await respond(responseUrl, { text: `:warning: Couldn't load the list: ${(err as Error).message}` });
           }

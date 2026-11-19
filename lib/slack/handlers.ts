@@ -9,6 +9,8 @@ import {
   linkSchema,
   postSchema,
   type ContentKey,
+  eventEnd,
+  type SiteEvent,
 } from "../content/schema";
 import { THEMES, THEME_IDS, type ThemeId } from "../../themes";
 import { esc, siteUrl, slack } from "./api";
@@ -289,49 +291,31 @@ export async function findItem(id: string): Promise<ItemRef | null> {
 
 // ---- /dai list --------------------------------------------------------------
 
-const fmt = (iso: string) =>
+const fmt = (iso: string, withYear = false) =>
   new Date(iso).toLocaleString("en-US", {
     timeZone: "America/Chicago",
     weekday: "short",
     month: "short",
     day: "numeric",
+    ...(withYear ? { year: "numeric" } : {}),
     hour: "numeric",
     minute: "2-digit",
   });
 
-export async function listBlocks() {
-  const [events, posts, site] = await Promise.all([readContent("events"), readContent("posts"), readContent("site")]);
-  const now = Date.now();
-  const upcoming = events
-    .filter((e) => Date.parse(e.end ?? e.start) >= now)
-    .sort((a, b) => Date.parse(a.start) - Date.parse(b.start))
-    .slice(0, 8);
-  const recent = [...posts].sort((a, b) => Date.parse(b.date) - Date.parse(a.date)).slice(0, 6);
-  const links = site.links.slice(0, 6);
+// Slack allows at most 50 blocks per message; each listed item uses two.
+const MAX_ITEMS_PAST_LIST = 23;
 
-  const blocks: Record<string, unknown>[] = [
-    {
-      type: "section",
-      text: {
-        type: "mrkdwn",
-        text: [
-          `*Theme:* ${THEMES[site.theme].label}`,
-          `*Countdown:* ${site.countdown ? `${esc(site.countdown.label)} — ${fmt(site.countdown.target)}` : "_next event (automatic)_"}`,
-          `*Banner:* ${site.announcement ? esc(site.announcement.text) : "_none_"}`,
-          `<${siteUrl()}|View the site>`,
-        ].join("\n"),
-      },
-    },
-  ];
+const header = (text: string) => ({ type: "header", text: { type: "plain_text", text } });
+const note = (text: string) => ({ type: "context", elements: [{ type: "mrkdwn", text }] });
 
-  const item = (ref: ItemRef, text: string, editable = true) => [
+/** A listed item with Edit / Remove buttons. */
+function itemBlocks(ref: ItemRef, text: string) {
+  return [
     { type: "section", text: { type: "mrkdwn", text } },
     {
       type: "actions",
       elements: [
-        ...(editable
-          ? [{ type: "button", text: { type: "plain_text", text: "Edit" }, action_id: "edit", value: JSON.stringify(ref) }]
-          : []),
+        { type: "button", text: { type: "plain_text", text: "Edit" }, action_id: "edit", value: JSON.stringify(ref) },
         {
           type: "button",
           text: { type: "plain_text", text: "Remove" },
@@ -348,21 +332,78 @@ export async function listBlocks() {
       ],
     },
   ];
+}
 
-  const header = (text: string) => ({ type: "header", text: { type: "plain_text", text } });
+const eventBlocks = (e: SiteEvent, withYear = false) =>
+  itemBlocks(
+    { key: "events", id: e.id },
+    `*${esc(e.title)}*\n${fmt(e.start, withYear)}${e.location ? ` · ${esc(e.location)}` : ""}`,
+  );
+
+function splitByTime(events: SiteEvent[], now = Date.now()) {
+  return {
+    upcoming: events.filter((e) => eventEnd(e) >= now).sort((a, b) => Date.parse(a.start) - Date.parse(b.start)),
+    past: events.filter((e) => eventEnd(e) < now).sort((a, b) => Date.parse(b.start) - Date.parse(a.start)),
+  };
+}
+
+/** `/dai list`: what's on the site right now, with Edit / Remove buttons. */
+export async function listBlocks() {
+  const [events, posts, site] = await Promise.all([readContent("events"), readContent("posts"), readContent("site")]);
+  const { upcoming, past } = splitByTime(events);
+  const recent = [...posts].sort((a, b) => Date.parse(b.date) - Date.parse(a.date)).slice(0, 5);
+  const links = site.links.slice(0, 5);
+
+  const blocks: Record<string, unknown>[] = [
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: [
+          `*Theme:* ${THEMES[site.theme].label}`,
+          `*Countdown:* ${site.countdown ? `${esc(site.countdown.label)} — ${fmt(site.countdown.target)}` : "_next event (automatic)_"}`,
+          `*Banner:* ${site.announcement ? esc(site.announcement.text) : "_none_"}`,
+          `<${siteUrl()}|View the site>`,
+        ].join("\n"),
+      },
+    },
+  ];
 
   blocks.push(header(`Upcoming events (${upcoming.length})`));
-  if (!upcoming.length) blocks.push({ type: "context", elements: [{ type: "mrkdwn", text: "None yet — add one with `/dai event`." }] });
-  for (const e of upcoming) blocks.push(...item({ key: "events", id: e.id }, `*${esc(e.title)}*\n${fmt(e.start)}${e.location ? ` · ${esc(e.location)}` : ""}`));
+  if (!upcoming.length) blocks.push(note("None yet — add one with `/dai event`."));
+  for (const e of upcoming.slice(0, 7)) blocks.push(...eventBlocks(e));
+
+  if (past.length) {
+    blocks.push(header(`Recent past events (${past.length})`));
+    for (const e of past.slice(0, 3)) blocks.push(...eventBlocks(e, true));
+    if (past.length > 3) blocks.push(note("See them all with `/dai list past`, or search: `/dai list past hack night`."));
+  }
 
   blocks.push(header("Latest updates"));
-  if (!recent.length) blocks.push({ type: "context", elements: [{ type: "mrkdwn", text: "None yet — share one with `/dai post`." }] });
-  for (const p of recent) blocks.push(...item({ key: "posts", id: p.id }, `*${esc(p.title)}*\n${fmt(p.date)}`));
+  if (!recent.length) blocks.push(note("None yet — share one with `/dai post`."));
+  for (const p of recent) blocks.push(...itemBlocks({ key: "posts", id: p.id }, `*${esc(p.title)}*\n${fmt(p.date)}`));
 
   blocks.push(header("Pinned links"));
-  if (!links.length) blocks.push({ type: "context", elements: [{ type: "mrkdwn", text: "None yet — pin one with `/dai link`." }] });
-  for (const l of links) blocks.push(...item({ key: "links", id: l.id }, `*${esc(l.label)}*\n${esc(l.url)}`));
+  if (!links.length) blocks.push(note("None yet — pin one with `/dai link`."));
+  for (const l of links) blocks.push(...itemBlocks({ key: "links", id: l.id }, `*${esc(l.label)}*\n${esc(l.url)}`));
 
+  return blocks.slice(0, 50);
+}
+
+/** `/dai list past [words]`: past events, newest first, optionally filtered by title. */
+export async function pastListBlocks(search = "") {
+  const words = search.toLowerCase().split(/\s+/).filter(Boolean);
+  const { past } = splitByTime(await readContent("events"));
+  const matches = past.filter((e) => words.every((w) => e.title.toLowerCase().includes(w)));
+
+  const blocks: Record<string, unknown>[] = [
+    header(words.length ? `Past events matching “${search}” (${matches.length})` : `Past events (${past.length})`),
+  ];
+  if (!matches.length) blocks.push(note(words.length ? "Nothing matches — try fewer words." : "No past events yet."));
+  for (const e of matches.slice(0, MAX_ITEMS_PAST_LIST)) blocks.push(...eventBlocks(e, true));
+  if (matches.length > MAX_ITEMS_PAST_LIST) {
+    blocks.push(note(`Showing the ${MAX_ITEMS_PAST_LIST} most recent. Add a word from the title to narrow it down: \`/dai list past workshop\`.`));
+  }
   return blocks;
 }
 
