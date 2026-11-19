@@ -1,13 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { site } from "@/lib/content";
-import { THEMES, themeStyle } from "@/lib/themes";
+import { THEMES } from "@/themes";
 import { fontVariables } from "./fonts";
 // The brand typeface. The logo and the "DePaul AI" wordmark are always Open Sauce.
 import "@fontsource/open-sauce-sans/700.css";
 import "./globals.css";
-import "./themes/fall.css";
-import "./themes/winter.css";
-import "./themes/spring.css";
+import "@/themes/styles.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.SITE_URL || "https://depaulai.org"),
@@ -20,12 +18,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: THEMES[site.theme].tokens.bg,
+  themeColor: THEMES[site.theme].background,
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" data-theme={site.theme} style={themeStyle(site.theme)} className={`${fontVariables} antialiased`}>
+    <html lang="en" data-theme={site.theme} className={`${fontVariables} antialiased`}>
       <body className="min-h-dvh">{children}</body>
     </html>
   );

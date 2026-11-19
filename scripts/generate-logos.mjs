@@ -1,5 +1,8 @@
 /**
- * Generates the built-in theme logos in public/logos/<theme>.svg.
+ * Generates default logos for themes that don't have an official one yet
+ * (public/themes/<theme>/logo.svg), plus the fall-2026 foliage texture.
+ * Themes with an official logo (fall-2026, spring-2026) ship it as logo.png
+ * and are not touched.
  *
  *   npm run logos
  *
@@ -21,7 +24,8 @@ const font = opentype.parse(buf.buffer.slice(buf.byteOffset, buf.byteOffset + bu
 
 // ---- the wordmark: fixed size and position, shared by every theme ----------
 const WORD = "DAI";
-const WIDTH = 300; // px, in a 512×512 logo
+// Matches the official logos: the wordmark spans ~27% of the square.
+const WIDTH = 138; // px, in a 512×512 logo
 const CENTER = [256, 256];
 
 function wordmarkPath() {
@@ -49,18 +53,6 @@ const wordmark = (fill, extra = "") => `<path d="${DAI}" fill="${fill}"${extra}/
 let seed = 1;
 const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
 const r1 = (n) => n.toFixed(1);
-
-/** Points along a line with a ragged, hand-torn wobble. */
-function tornLine(x0, y0, x1, y1, steps, amp) {
-  const pts = [];
-  const nx = -(y1 - y0), ny = x1 - x0, len = Math.hypot(nx, ny);
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps, j = (rnd() - 0.5) * amp + (rnd() < 0.15 ? (rnd() - 0.5) * amp * 2 : 0);
-    pts.push([x0 + (x1 - x0) * t + (nx / len) * j, y0 + (y1 - y0) * t + (ny / len) * j]);
-  }
-  return pts;
-}
-const poly = (pts) => "M" + pts.map(([x, y]) => `${r1(x)} ${r1(y)}`).join("L") + "Z";
 
 const svg = (defs, body) =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"><defs><clipPath id="sq"><rect width="512" height="512" rx="104"/></clipPath>${defs}</defs><g clip-path="url(#sq)">${body}</g></svg>\n`;
@@ -98,41 +90,13 @@ export function foliage(w, h, density, s0 = 7, tile = false) {
 }
 const leafBlur = `<filter id="leafblur"><feGaussianBlur stdDeviation="2.5"/></filter>`;
 
-const foliageFilter = `
-  <filter id="grain" x="0" y="0" width="100%" height="100%">
-    <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3"/>
-    <feColorMatrix values="0 0 0 0 .1  0 0 0 0 .07  0 0 0 0 .04  0 0 0 .35 0"/>
-    <feComposite in2="SourceGraphic" operator="in"/>
-  </filter>
-  <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#1a0d05" flood-opacity=".45"/></filter>`;
-
 const logos = {};
 
-// FALL: torn-paper collage. Foliage, a black torn band, a cobalt scrap, magazine text.
-{
-  seed = 21;
-  const band = [...tornLine(-20, 150, 532, 170, 28, 10), ...tornLine(532, 362, -20, 345, 28, 10)];
-  const rim = [...tornLine(-20, 144, 532, 163, 28, 7), ...tornLine(532, 369, -20, 352, 28, 7)];
-  const blue = [...tornLine(330, 388, 470, 402, 8, 6), ...tornLine(470, 470, 336, 462, 8, 6)];
-  const mag = [...tornLine(18, 30, 196, 18, 9, 5), ...tornLine(205, 120, 24, 132, 9, 5)];
-  let lines = "";
-  for (let y = 46; y < 118; y += 9) lines += `<rect x="36" y="${y}" width="${150 - (y % 27)}" height="3.4" fill="#2a221a" opacity=".55" transform="rotate(-3.5 110 75)"/>`;
-  const leaves = foliage(512, 512, 22, 31);
-  seed = 21;
-  logos.fall = svg(foliageFilter + leafBlur, `
-  ${leaves}
-  <g filter="url(#shadow)"><path d="${poly(mag)}" fill="#f3ead8"/>${lines}</g>
-  <g filter="url(#shadow)"><path d="${poly(blue)}" fill="#2f5bd3"/></g>
-  <g filter="url(#shadow)"><path d="${poly(rim)}" fill="#f6efe1"/><path d="${poly(band)}" fill="#14110e"/></g>
-  <rect width="512" height="512" fill="#fff" filter="url(#grain)"/>
-  ${wordmark("#f6efe1")}`);
-}
-
 // WINTER: liquid chrome color on the wordmark, over a cyber grid.
-logos.winter = svg(`
+logos["winter-2027"] = svg(`
   <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c1526"/><stop offset="1" stop-color="#03060c"/></linearGradient>
   <radialGradient id="halo" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#3b82f6" stop-opacity=".5"/><stop offset="1" stop-color="#3b82f6" stop-opacity="0"/></radialGradient>
-  <linearGradient id="chrome" x1="0" y1="190" x2="0" y2="322" gradientUnits="userSpaceOnUse">
+  <linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="#ffffff"/><stop offset=".3" stop-color="#d4deec"/><stop offset=".47" stop-color="#76869f"/><stop offset=".52" stop-color="#2a3650"/><stop offset=".57" stop-color="#eef4ff"/><stop offset=".8" stop-color="#9fc3f2"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
   <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#8fb4e6" stroke-width="1" opacity=".14"/></pattern>`, `
   <rect width="512" height="512" fill="url(#bg)"/>
@@ -152,7 +116,7 @@ logos.winter = svg(`
     const a = rnd() * Math.PI * 2, d = 175 + rnd() * 90, x = 256 + Math.cos(a) * d, y = 256 + Math.sin(a) * d, c = cols[i % cols.length];
     confetti += i % 2 ? `<circle cx="${r1(x)}" cy="${r1(y)}" r="${r1(4 + rnd() * 6)}" fill="${c}"/>` : `<rect x="-9" y="-3" width="18" height="6" rx="3" fill="${c}" transform="translate(${r1(x)} ${r1(y)}) rotate(${(a * 57).toFixed(0)})"/>`;
   }
-  logos.spring = svg(`
+  logos["spring-2027"] = svg(`
   ${blobs.map(([c], i) => `<radialGradient id="b${i}"><stop offset="0" stop-color="${c}"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient>`).join("")}
   <filter id="swirl" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="turbulence" baseFrequency=".008" numOctaves="2" seed="5"/><feDisplacementMap in="SourceGraphic" scale="70"/></filter>`, `
   <rect width="512" height="512" fill="#fff4e8"/>
@@ -162,13 +126,8 @@ logos.winter = svg(`
   ${wordmark("#e0136f")}`);
 }
 
-// SUMMER
-logos.summer = svg(`<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset=".6" stop-color="#ff8f5a"/><stop offset="1" stop-color="#1fb5ac"/></linearGradient>`, `
-  <rect width="512" height="512" fill="url(#sky)"/><circle cx="256" cy="290" r="150" fill="#fff3c4" opacity=".55"/>
-  ${wordmark("#14322f")}`);
-
 // MIDNIGHT (off-season)
-logos.midnight = svg(`<radialGradient id="g" cx=".3" cy=".25" r=".9"><stop offset="0" stop-color="#1e3a8a"/><stop offset=".55" stop-color="#0d0d1a"/><stop offset="1" stop-color="#07070c"/></radialGradient>`, `
+logos["off-season"] = svg(`<radialGradient id="g" cx=".3" cy=".25" r=".9"><stop offset="0" stop-color="#1e3a8a"/><stop offset=".55" stop-color="#0d0d1a"/><stop offset="1" stop-color="#07070c"/></radialGradient>`, `
   <rect width="512" height="512" fill="url(#g)"/>
   ${wordmark("#ffffff")}`);
 
@@ -176,11 +135,11 @@ logos.midnight = svg(`<radialGradient id="g" cx=".3" cy=".25" r=".9"><stop offse
 {
   const T = 560;
   const tile = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${T} ${T}" width="${T}" height="${T}"><defs>${leafBlur}</defs>${foliage(T, T, 22, 77, true)}</svg>\n`;
-  writeFileSync(path.join(root, "public/themes/fall-foliage.svg"), tile);
-  console.log("public/themes/fall-foliage.svg");
+  writeFileSync(path.join(root, "public/themes/fall-2026/foliage.svg"), tile);
+  console.log("public/themes/fall-2026/foliage.svg");
 }
 
 for (const [name, content] of Object.entries(logos)) {
-  writeFileSync(path.join(root, "public/logos", `${name}.svg`), content);
-  console.log(`public/logos/${name}.svg`);
+  writeFileSync(path.join(root, "public/themes", name, "logo.svg"), content);
+  console.log(`public/themes/${name}/logo.svg`);
 }

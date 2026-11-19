@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { THEME_IDS } from "../themes";
+import { THEME_IDS } from "../../themes";
 
 /**
  * Every piece of editable site content is described here.
@@ -36,11 +36,9 @@ export const announcementSchema = z.object({
 });
 
 export const siteSchema = z.object({
+  /** The live theme: a folder in themes/, e.g. "fall-2026". Set with `/dai theme`. */
   theme: z.enum(THEME_IDS),
-  /**
-   * Custom logo per theme (uploaded with `/dai logo`). Themes without one use
-   * their designed default in public/logos/<theme>.svg.
-   */
+  /** Logos uploaded with `/dai logo`, per theme. Themes without one use their default. */
   logos: z.partialRecord(z.enum(THEME_IDS), upload).default({}),
   hero: z.object({
     title: z.string().min(1),

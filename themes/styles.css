@@ -1,0 +1,7 @@
+/* Every theme's stylesheet. Each one is scoped to its own [data-theme], so
+   they never interfere with each other. Add new quarters here. */
+@import "./spring-2026/styles.css";
+@import "./fall-2026/styles.css";
+@import "./winter-2027/styles.css";
+@import "./spring-2027/styles.css";
+@import "./off-season/styles.css";

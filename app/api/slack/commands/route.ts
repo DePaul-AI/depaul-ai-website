@@ -2,7 +2,7 @@ import { after } from "next/server";
 import { verifySlackRequest, channelAllowed, userAllowed } from "@/lib/slack/verify";
 import { notify, respond, siteUrl } from "@/lib/slack/api";
 import { clearSiteField, findItem, listBlocks, openModal, removeItem, resetLogo, setTheme } from "@/lib/slack/handlers";
-import { THEMES, THEME_IDS, type ThemeId } from "@/lib/themes";
+import { THEMES, THEME_IDS, type ThemeId } from "@/themes";
 
 /**
  * Handles the `/dai` slash command. Slack needs an answer within 3 seconds,

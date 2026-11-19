@@ -11,7 +11,7 @@ import {
 } from "next/font/google";
 
 /**
- * Every theme picks its fonts in app/themes/<theme>.css using these CSS
+ * Every theme picks its fonts in themes/<quarter>/styles.css using these CSS
  * variables. Browsers only download the fonts the active theme uses.
  */
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });

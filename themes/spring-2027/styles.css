@@ -1,0 +1,204 @@
+/*
+ * SPRING: color explosion. A louder remix of the original pastel logo.
+ * Saturated color bursts, sticker-style type with misregistered color
+ * shadows, chunky outlines and confetti. Still TBD, so it's easy to retune
+ * by changing the --pop colors below.
+ */
+/* Everything is scoped to this theme. A nested [data-theme] (a past event card
+   from another quarter) gets its own theme's styles instead. */
+@scope ([data-theme="spring-2027"]) to ([data-theme]) {
+  /* ---- palette ---------------------------------------------------------- */
+  :scope {
+    color-scheme: light;
+    --bg: #fff6ec;
+    --surface: #ffffff;
+    --line: #f0d9c8;
+    --fg: #1d1030;
+    --muted: #6b5a73;
+    --accent: #ff2d87;
+    --accent-fg: #ffffff;
+    --glow-1: #ff2d87;
+    --glow-2: #ffd400;
+    --glow-3: #00b8ff;
+  }
+
+  :scope {
+    --font-body: var(--font-bricolage), ui-sans-serif, sans-serif;
+    --font-heading: var(--font-bricolage), ui-sans-serif, sans-serif;
+    --ink: #1d1030;
+    --pop-1: #ff2d87;
+    --pop-2: #ffd400;
+    --pop-3: #00b8ff;
+    --pop-4: #3ddc84;
+    --pop-5: #8b5cf6;
+    --pop-6: #ff8a00;
+  }
+
+  .banner {
+    background: linear-gradient(90deg, var(--pop-1), var(--pop-6), var(--pop-2), var(--pop-4), var(--pop-3), var(--pop-5));
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  .site-header {
+    background: rgb(255 246 236 / 0.85);
+    border-bottom: 2.5px solid var(--ink);
+  }
+
+  .hero-eyebrow {
+    border: 2.5px solid var(--ink);
+    background: var(--pop-2);
+    color: var(--ink);
+    font-weight: 700;
+    rotate: -3deg;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+
+  /* Sticker type: white fill, ink outline, offset color plates */
+  .hero-title {
+    font-weight: 800;
+    font-size: clamp(3rem, 10vw, 6.25rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    color: #fff;
+    -webkit-text-stroke: 0.035em var(--ink);
+    paint-order: stroke fill;
+    text-shadow: -0.05em 0.04em 0 var(--pop-3), 0.07em 0.07em 0 var(--pop-1);
+  }
+
+  .hero-tagline {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .hero-logo {
+    border: 3px solid var(--ink);
+    box-shadow: 10px 10px 0 var(--pop-5);
+    rotate: -5deg;
+    transition: rotate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .hero-logo:hover { rotate: 4deg; }
+
+  /* ---- chunky sticker cards --------------------------------------------------- */
+  .countdown-box,
+  .card {
+    border: 2.5px solid var(--ink);
+    background: #fff;
+    backdrop-filter: none;
+    box-shadow: 6px 6px 0 var(--pop, var(--pop-1));
+  }
+  .countdown-box {
+    --pop: var(--pop-2);
+    box-shadow: 9px 9px 0 var(--pop);
+  }
+  li:nth-child(6n + 1) > .card { --pop: var(--pop-1); }
+  li:nth-child(6n + 2) > .card { --pop: var(--pop-3); }
+  li:nth-child(6n + 3) > .card { --pop: var(--pop-4); }
+  li:nth-child(6n + 4) > .card { --pop: var(--pop-5); }
+  li:nth-child(6n + 5) > .card { --pop: var(--pop-6); }
+  li:nth-child(6n + 6) > .card { --pop: var(--pop-2); }
+  .card { transition: translate 0.15s, box-shadow 0.15s; }
+  .link-card:hover {
+    color: var(--ink);
+    translate: -2px -2px;
+    box-shadow: 8px 8px 0 var(--pop);
+  }
+
+  .countdown-digit {
+    display: inline-block;
+    min-width: 2.2ch;
+    padding: 0.05em 0.15em;
+    border: 2.5px solid var(--ink);
+    border-radius: 0.3em;
+    background: var(--pop-1);
+    color: #fff;
+    font-family: var(--font-bricolage);
+    font-weight: 800;
+    text-align: center;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .countdown-unit:nth-child(2) .countdown-digit { background: var(--pop-3); rotate: 3deg; }
+  .countdown-unit:nth-child(3) .countdown-digit { background: var(--pop-4); color: var(--ink); rotate: -2deg; }
+  .countdown-unit:nth-child(4) .countdown-digit { background: var(--pop-5); rotate: 4deg; }
+  .countdown-label { color: var(--ink); font-weight: 700; }
+
+  .section-title {
+    display: inline-block;
+    padding: 0.1em 0.4em;
+    color: var(--ink);
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-transform: none;
+    background: linear-gradient(transparent 45%, var(--pop-2) 45%, var(--pop-2) 88%, transparent 88%);
+  }
+
+  .date-tile {
+    border: 2.5px solid var(--ink);
+    border-radius: 14px;
+    background: var(--pop, var(--pop-1));
+    color: var(--ink);
+  }
+  .date-tile > :first-child { color: var(--ink); font-weight: 800; }
+  .date-tile > :last-child { font-weight: 800; }
+
+  .media {
+    border: 2.5px solid var(--ink);
+    border-radius: 16px;
+  }
+
+  .btn-primary {
+    border: 2.5px solid var(--ink);
+    font-weight: 700;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .btn-primary:hover { opacity: 1; translate: -1px -1px; box-shadow: 4px 4px 0 var(--ink); }
+  .btn-ghost {
+    border: 2.5px solid var(--ink);
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .btn-ghost:hover { background: var(--pop-2); }
+
+  footer { border-top: 2.5px solid var(--ink); }
+
+  /* ---- hero decor ------------------------------------------------------------- */
+  .spring-burst {
+    position: absolute;
+    inset: -20% -10% 0 -10%;
+    filter: blur(50px) saturate(1.3);
+    opacity: 0.7;
+    mask-image: linear-gradient(to bottom, black 45%, transparent 85%);
+    background:
+      radial-gradient(28% 32% at 12% 22%, var(--pop-1), transparent 70%),
+      radial-gradient(25% 30% at 85% 12%, var(--pop-6), transparent 70%),
+      radial-gradient(26% 30% at 72% 62%, var(--pop-2), transparent 70%),
+      radial-gradient(24% 28% at 30% 80%, var(--pop-4), transparent 70%),
+      radial-gradient(22% 26% at 52% 30%, var(--pop-3), transparent 70%),
+      radial-gradient(20% 24% at 95% 55%, var(--pop-5), transparent 70%);
+    animation: spring-pulse 14s ease-in-out infinite alternate;
+  }
+  .spring-star {
+    position: absolute;
+    animation: spring-spin 30s linear infinite;
+  }
+  .spring-squiggle { position: absolute; }
+  .spring-confetti {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--ink);
+  }
+  .spring-confetti-0 { border-radius: 9999px; }
+  .spring-confetti-1 { width: 22px; height: 9px; border-radius: 9999px; }
+  .spring-confetti-2 { clip-path: polygon(50% 0, 100% 100%, 0 100%); border: 0; }
+
+}
+
+@keyframes spring-pulse {
+  to { transform: scale(1.08) rotate(3deg); filter: blur(50px) saturate(1.3) hue-rotate(20deg); }
+}
+
+@keyframes spring-spin {
+  to { rotate: 360deg; }
+}

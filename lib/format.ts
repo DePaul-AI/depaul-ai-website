@@ -5,6 +5,7 @@ const part = (iso: string, opts: Intl.DateTimeFormatOptions) =>
 
 export const monthShort = (iso: string) => part(iso, { month: "short" });
 export const dayOfMonth = (iso: string) => part(iso, { day: "numeric" });
+export const year = (iso: string) => part(iso, { year: "numeric" });
 export const weekday = (iso: string) => part(iso, { weekday: "long" });
 export const time = (iso: string) => part(iso, { hour: "numeric", minute: "2-digit" });
 export const longDate = (iso: string) =>
@@ -31,4 +32,4 @@ export function googleCalendarUrl(e: SiteEvent) {
 }
 
 /** Current year in Chicago, for "Fall Quarter 2026". */
-export const currentYear = () => part(new Date().toISOString(), { year: "numeric" });
+
