@@ -4,7 +4,7 @@ import { defineTheme } from "../types";
 export default defineTheme({
   label: "Winter 2027",
   season: "Winter Quarter 2027",
-  // TODO: confirm against DePaul's official academic calendar.
+  // DePaul Winter Quarter 2027: first day of classes through finals.
   dates: { start: "2027-01-04", end: "2027-03-20" },
   scheme: "dark",
   background: "#05080f",
