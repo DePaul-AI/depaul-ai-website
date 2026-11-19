@@ -23,38 +23,58 @@ function Glow() {
   return <div className="glow" />;
 }
 
-/** Newspaper clippings, tape, halftone and an ink stamp. */
+/**
+ * Torn-paper collage: autumn foliage (the hero background, see fall.css),
+ * a sweep of black construction paper, a torn magazine page and cobalt scraps.
+ */
 function Fall() {
-  const lines = (n: number) =>
-    Array.from({ length: n }, (_, i) => <span key={i} style={{ width: `${100 - ((i * 37) % 30)}%` }} />);
   return (
     <>
-      <div className="fall-clip right-[-2rem] top-10 w-72 rotate-[5deg] max-lg:hidden">
-        <p className="fall-masthead">The DePaul Dispatch</p>
-        <p className="fall-headline">Students Teach Machines, Machines Return Favor</p>
-        <div className="fall-cols">
-          <div>{lines(9)}</div>
-          <div>{lines(9)}</div>
+      <svg className="fall-black" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+        <path d={BLACK_PAPER} fill="#16130f" />
+      </svg>
+      <div className="fall-shadow absolute top-[12%] right-[-1.5rem] w-80 rotate-[4deg] max-lg:hidden">
+        <div className="fall-magazine torn relative">
+          <p>
+            <span className="dropcap">W</span>hen the leaves turn, the library fills up. Somewhere on the third
+            floor, a group of students is teaching a model to read handwriting, arguing about attention heads, and
+            ordering one more pizza than they need.
+          </p>
+          <p>
+            &ldquo;Nobody here started as an expert,&rdquo; one of them says. &ldquo;That&rsquo;s kind of the
+            point.&rdquo; By midnight the demo works. Mostly.
+          </p>
         </div>
       </div>
-      <div className="fall-clip bottom-16 right-[18%] w-48 -rotate-[8deg] max-lg:hidden">
-        <p className="fall-headline text-base">EXTRA! EXTRA!</p>
-        <div className="fall-cols">
-          <div>{lines(5)}</div>
-        </div>
+      <div className="fall-shadow absolute bottom-[14%] right-[30%] max-lg:hidden">
+        <div className="fall-scrap torn h-16 w-28 rotate-[-8deg]" />
       </div>
-      <div className="fall-halftone left-[-4rem] top-[45%] size-56" />
-      <div className="fall-halftone right-[35%] top-[-3rem] size-40 max-sm:hidden" />
-      <div className="fall-tape right-28 top-8 w-28 rotate-[-18deg] max-lg:hidden" />
-      <div className="fall-tape bottom-40 right-[24%] w-24 rotate-[12deg] max-lg:hidden" />
-      <div className="fall-stamp right-[8%] bottom-10">
-        <span>Fall · Quarter</span>
-        <strong>DAI</strong>
-        <span>Chicago · IL</span>
+      <div className="fall-shadow absolute top-[8%] left-[56%] max-md:hidden">
+        <div className="fall-scrap torn h-10 w-20 rotate-[12deg]" style={{ background: "#f6efe1" }} />
       </div>
+      <div className="fall-tear-rim" />
+      <div className="fall-tear" />
     </>
   );
 }
+
+/** A torn edge that sweeps from the top-middle down to the bottom-left, like the collage. */
+const BLACK_PAPER = (() => {
+  let seed = 9;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const pts: string[] = ["0 0"];
+  const steps = 60;
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    // Cubic curve from (980, 0) to (430, 1000), bowing to the right.
+    const x = (1 - t) ** 3 * 980 + 3 * (1 - t) ** 2 * t * 1050 + 3 * (1 - t) * t ** 2 * 380 + t ** 3 * 430;
+    const y = t * 1000;
+    const jag = (rnd() - 0.5) * 16 + (rnd() < 0.15 ? (rnd() - 0.5) * 30 : 0);
+    pts.push(`${(x + jag).toFixed(1)} ${y.toFixed(1)}`);
+  }
+  pts.push("0 1000");
+  return "M" + pts.join("L") + "Z";
+})();
 
 /** Morphing chrome blobs over a fading cyber grid, with HUD readouts. */
 function Winter() {

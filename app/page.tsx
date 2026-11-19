@@ -37,7 +37,7 @@ export default function Home() {
 
       <header className="site-header">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
-          <a href="#top" className="flex items-center gap-2.5 font-display font-semibold">
+          <a href="#top" className="brand-name flex items-center gap-2.5">
             <Logo className="relative size-8 overflow-hidden rounded-lg" sizes="32px" />
             {site.hero.title}
           </a>
@@ -59,12 +59,13 @@ export default function Home() {
               <p className="hero-eyebrow">
                 {theme.season} {site.theme !== "midnight" && currentYear()}
               </p>
-              <div>
+              <div className="hero-copy">
                 <HeroTitle theme={site.theme} title={site.hero.title} />
                 <p className="hero-tagline mt-5 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">{site.hero.tagline}</p>
               </div>
 
               {countdown ? (
+                <div className="countdown-wrap w-full max-w-xl">
                 <div className="countdown-box">
                   <p className="text-sm tracking-[0.2em] text-muted uppercase">Counting down to</p>
                   <p className="mt-1 font-display text-xl font-semibold sm:text-2xl">{countdown.label}</p>
@@ -80,6 +81,7 @@ export default function Home() {
                     </a>
                   )}
                 </div>
+                </div>
               ) : (
                 <a href="#updates" className="btn-primary">
                   See what we&apos;re up to
@@ -91,7 +93,7 @@ export default function Home() {
           </div>
         </section>
 
-        <div className="mx-auto grid max-w-5xl gap-16 px-4 pb-24 sm:px-6 lg:grid-cols-[1fr_20rem] lg:gap-12">
+        <div className="content-grid mx-auto grid max-w-5xl gap-16 px-4 pb-24 sm:px-6 lg:grid-cols-[1fr_20rem] lg:gap-12">
           {/* Events */}
           <section id="events" className="min-w-0">
             <SectionTitle>Upcoming events</SectionTitle>
