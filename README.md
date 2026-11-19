@@ -34,7 +34,7 @@ You can also hover any Slack message → **⋯** → **Post to website** to turn
 an update (the first line becomes the headline, the first link becomes the link, and
 an attached image comes along).
 
-Changes go live about a minute after you save. The bot confirms each change in the channel.
+Changes go live a couple of minutes after you save (Netlify rebuilds the site). The bot confirms each change in the channel.
 
 **Past events** move into the "Past events" list on their own. Nothing needs cleaning up.
 
@@ -88,7 +88,11 @@ optionally a CSS file (imported in `app/layout.tsx`) and a `Decor` entry.
 
 ## One-time setup
 
-1. **Deploy** the repo to Vercel (or any host that runs Next.js and redeploys on push to `main`).
+1. **Deploy**: the site is on Netlify, which detects Next.js automatically and rebuilds on every
+   push to the production branch, including the bot's commits. Each change made from Slack is
+   one Netlify build, so it counts toward the plan's build minutes. If Netlify ever holds a bot
+   deploy for approval (e.g. "unrecognized Git contributor"), approve it once or adjust that setting
+   under Site configuration → Build & deploy.
 2. **GitHub token**: create a [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new)
    (or one owned by a bot account) with access to **only this repository** and
    **Contents: Read and write**. If `main` has branch protection that blocks direct pushes,
@@ -96,12 +100,15 @@ optionally a CSS file (imported in `app/layout.tsx`) and a `Decor` entry.
 3. **Slack app**: at [api.slack.com/apps](https://api.slack.com/apps), choose **Create New App →
    From an app manifest** and paste [`slack/manifest.yml`](slack/manifest.yml). Install it to
    the workspace, then `/invite @website` in the website channel.
-4. **Environment variables**: set these on the host (see [`.env.example`](.env.example)):
+4. **Environment variables**: in Netlify, **Site configuration → Environment variables → Add a
+   variable**. Make sure each one's scope includes **Functions** (the Slack endpoints run as
+   functions), and mark the tokens as secret. Redeploy afterwards so they take effect. You need
+   (see [`.env.example`](.env.example)):
    - `SLACK_SIGNING_SECRET` (Slack app → Basic Information)
    - `SLACK_BOT_TOKEN` (Slack app → OAuth & Permissions, starts with `xoxb-`)
    - `SLACK_ALLOWED_CHANNELS`: the website channel's ID (channel details → bottom of the About tab)
    - `SLACK_ALLOWED_USERS` *(optional)*: limit editing to specific people
-   - `GITHUB_TOKEN`, `GITHUB_REPO`, `GITHUB_BRANCH`
+   - `GITHUB_TOKEN`, `GITHUB_REPO`, and `GITHUB_BRANCH` (the branch Netlify deploys to production)
    - `SITE_URL`
 
 ## Development

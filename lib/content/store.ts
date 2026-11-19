@@ -8,7 +8,7 @@ import { CONTENT_FILES, type ContentData, type ContentKey } from "./schema";
  * public/uploads.
  *
  * - In production everything is read from and committed to GitHub, which
- *   triggers a redeploy (about a minute until the change is live). A change
+ *   triggers a redeploy (a couple of minutes until the change is live). A change
  *   and its image land in one commit.
  * - With CONTENT_STORE=local (the default in `npm run dev` without a
  *   GITHUB_TOKEN) the files on disk are edited directly.

@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     after(async () => {
       try {
         const done = await work();
-        await notify(channel, user, `:white_check_mark: <@${user}> ${done}. Live on <${siteUrl()}|the site> in about a minute.`);
+        await notify(channel, user, `:white_check_mark: <@${user}> ${done}. Live on <${siteUrl()}|the site> in a couple of minutes.`);
       } catch (err) {
         await respond(responseUrl, { text: `:warning: That didn't save: ${(err as Error).message}` });
       }
