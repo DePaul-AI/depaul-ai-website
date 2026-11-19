@@ -50,5 +50,14 @@
     "location": "The Quad -> Arts & Letter 405",
     "description": "happy fall quarter!! join us in the quad for our very first event from 3-6 p.m.. we’ll be providing craft supplies for everyone to make & decorate their own name tags:))",
     "image": "/uploads/spaces-fall-in-the-quad-h22bi2.png"
+  },
+  {
+    "id": "technical-1-agents-pqn8",
+    "title": "Technical #1: Agents",
+    "start": "2026-09-30T18:00:00.000Z",
+    "end": "2026-09-30T21:00:00.000Z",
+    "location": "DePaul Center 8012",
+    "description": "Learn to build your very own coding agents ft. ollama & gemma",
+    "image": "/uploads/technical-1-agents-huo676.png"
   }
 ]
