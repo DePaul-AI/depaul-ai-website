@@ -5,7 +5,10 @@
     "title": "DePaul AI",
     "tagline": "A student community at DePaul University exploring artificial intelligence — together."
   },
-  "announcement": null,
+  "announcement": {
+    "text": "Board Applications for Winter 2027 Due December 1st!",
+    "link": "https://boardform.depaulai.org/"
+  },
   "countdown": null,
   "links": [
     {
