@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { site } from "@/lib/content";
 import { THEMES, themeStyle } from "@/lib/themes";
 import { fontVariables } from "./fonts";
+// The brand typeface. The logo and the "DePaul AI" wordmark are always Open Sauce.
+import "@fontsource/open-sauce-sans/700.css";
 import "./globals.css";
 import "./themes/fall.css";
 import "./themes/winter.css";
