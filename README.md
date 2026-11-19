@@ -34,7 +34,7 @@ You can also hover any Slack message → **⋯** → **Post to website** to turn
 an update (the first line becomes the headline, the first link becomes the link, and
 an attached image comes along).
 
-Changes go live a couple of minutes after you save (Netlify rebuilds the site). The bot confirms each change in the channel.
+Changes go live a couple of minutes after you save (the host rebuilds the site). The bot confirms each change in the channel.
 
 **Past events** move into the "Past events" list on their own. Nothing needs cleaning up.
 
@@ -93,11 +93,9 @@ optionally a CSS file (imported in `app/layout.tsx`) and a `Decor` entry.
 
 ## One-time setup
 
-1. **Deploy**: the site is on Netlify, which detects Next.js automatically and rebuilds on every
-   push to the production branch, including the bot's commits. Each change made from Slack is
-   one Netlify build, so it counts toward the plan's build minutes. If Netlify ever holds a bot
-   deploy for approval (e.g. "unrecognized Git contributor"), approve it once or adjust that setting
-   under Site configuration → Build & deploy.
+1. **Deploy** on any host that runs `npm run build` + `npm start` and redeploys on every push to
+   the production branch (including the bot's commits). The site runs on **Railway**; see
+   [Hosting on Railway](#hosting-on-railway). Each change made from Slack is one rebuild.
 2. **GitHub token**: create a [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new)
    (or one owned by a bot account) with access to **only this repository** and
    **Contents: Read and write**. If `main` has branch protection that blocks direct pushes,
@@ -105,16 +103,32 @@ optionally a CSS file (imported in `app/layout.tsx`) and a `Decor` entry.
 3. **Slack app**: at [api.slack.com/apps](https://api.slack.com/apps), choose **Create New App →
    From an app manifest** and paste [`slack/manifest.yml`](slack/manifest.yml). Install it to
    the workspace, then `/invite @website` in the website channel.
-4. **Environment variables**: in Netlify, **Site configuration → Environment variables → Add a
-   variable**. Make sure each one's scope includes **Functions** (the Slack endpoints run as
-   functions), and mark the tokens as secret. Redeploy afterwards so they take effect. You need
+4. **Environment variables**: set these on the host and redeploy so they take effect
    (see [`.env.example`](.env.example)):
    - `SLACK_SIGNING_SECRET` (Slack app → Basic Information)
    - `SLACK_BOT_TOKEN` (Slack app → OAuth & Permissions, starts with `xoxb-`)
    - `SLACK_ALLOWED_CHANNELS`: the website channel's ID (channel details → bottom of the About tab)
    - `SLACK_ALLOWED_USERS` *(optional)*: limit editing to specific people
-   - `GITHUB_TOKEN`, `GITHUB_REPO`, and `GITHUB_BRANCH` (the branch Netlify deploys to production)
-   - `SITE_URL`
+   - `GITHUB_TOKEN`, `GITHUB_REPO`, and `GITHUB_BRANCH` (the branch the host deploys to production)
+   - `SITE_URL`: the public address, e.g. `https://depaulai.org` (also used at build time for link previews)
+   - Never set `CONTENT_STORE=local` in production: hosts like Railway wipe the disk on every deploy.
+
+### Hosting on Railway
+
+- **Service**: New Project → Deploy from GitHub repo → this repo, production branch `main`.
+  Railway detects Next.js and runs `npm run build` / `npm start`; `next start` listens on
+  Railway's `PORT` automatically. Node is pinned to >=20.9 in `package.json`.
+- **Variables**: add everything above under the service's **Variables** tab.
+- **Domain**: Settings → Networking → **Custom Domain** → `depaulai.org` (and `www.depaulai.org`),
+  then add the DNS records Railway shows at your registrar. A root domain needs a registrar that
+  supports CNAME flattening / ALIAS records (e.g. Cloudflare); otherwise use `www` and redirect
+  the root to it.
+- **Slack**: point **Slash Commands → /dai** at `https://depaulai.org/api/slack/commands` and
+  **Interactivity & Shortcuts** at `https://depaulai.org/api/slack/interactions`. Opening either
+  URL in a browser should show *405 Method Not Allowed*, which means it's live.
+- **Serverless vs. server**: Railway runs one long-lived Node server, so there are no cold
+  starts and the Slack bot's background work (`after()`) isn't subject to function time limits.
+
 
 ## Development
 
