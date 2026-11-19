@@ -28,6 +28,7 @@ In the website channel in Slack:
 | `/dai theme` | Switch the site's theme. Also works as `/dai theme winter-2027` |
 | `/dai logo` | Upload the logo for a theme. `/dai logo reset` goes back to the theme's built-in logo |
 | `/dai list` | See what's on the site, with **Edit** and **Remove** buttons |
+| `/dai list past` | Fix or remove past events. Add words to search by title: `/dai list past hack night` |
 | `/dai` | Help |
 
 You can also hover any Slack message → **⋯** → **Post to website** to turn it into

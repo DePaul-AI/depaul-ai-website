@@ -101,3 +101,8 @@ export type ContentData = {
   events: SiteEvent[];
   posts: Post[];
 };
+
+/** When an event is over. Without an explicit end, it's treated as running for two hours. */
+export function eventEnd(e: Pick<SiteEvent, "start" | "end">) {
+  return e.end ? Date.parse(e.end) : Date.parse(e.start) + 2 * 60 * 60 * 1000;
+}

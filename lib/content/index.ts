@@ -5,8 +5,8 @@ import {
   siteSchema,
   eventsSchema,
   postsSchema,
+  eventEnd,
   type Countdown,
-  type SiteEvent,
 } from "./schema";
 
 export * from "./schema";
@@ -19,11 +19,6 @@ export const TIME_ZONE = "America/Chicago";
 export const site = siteSchema.parse(siteJson);
 export const events = eventsSchema.parse(eventsJson);
 export const posts = postsSchema.parse(postsJson);
-
-function eventEnd(e: SiteEvent) {
-  // Without an explicit end, treat an event as running for two hours.
-  return e.end ? Date.parse(e.end) : Date.parse(e.start) + 2 * 60 * 60 * 1000;
-}
 
 export function splitEvents(now = Date.now()) {
   const sorted = [...events].sort((a, b) => Date.parse(a.start) - Date.parse(b.start));
