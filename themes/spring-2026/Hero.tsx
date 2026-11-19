@@ -1,24 +1,28 @@
-/* Spring 2026 hero art: the soft pastel color field from the Spring 2026 logo. */
-
-const BLOBS = [
-  { color: "var(--pastel-blue)", x: "8%", y: "6%", size: "34rem" },
-  { color: "var(--pastel-pink)", x: "62%", y: "-8%", size: "30rem" },
-  { color: "var(--pastel-green)", x: "34%", y: "42%", size: "32rem" },
-  { color: "var(--pastel-yellow)", x: "78%", y: "48%", size: "24rem" },
-  { color: "var(--pastel-lilac)", x: "-6%", y: "52%", size: "26rem" },
-];
+/* Spring 2026 hero art: watercolor wash (the hero background, see styles.css),
+   a strip of torn white paper, a vintage map scrap and a few birds. */
 
 export function Decor() {
   return (
     <>
-      {BLOBS.map((b, i) => (
-        <span
-          key={i}
-          className="pastel-blob"
-          style={{ background: b.color, left: b.x, top: b.y, width: b.size, height: b.size, animationDelay: `${i * -4}s` }}
-        />
-      ))}
-      <div className="pastel-grain" />
+      <div className="spring-paper-shadow absolute inset-0">
+        <div className="spring-tear deckled right-[-10%] top-[58%] h-40 w-[75%] -rotate-[7deg] max-lg:hidden" />
+        <div className="spring-map deckled right-[4%] top-[8%] h-52 w-72 rotate-[5deg] max-lg:hidden" />
+      </div>
+      <svg className="spring-birds left-[44%] top-[12%] w-28 max-md:hidden" viewBox="0 0 120 50" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+        <path d="M8 22q8-9 15 0q7-9 15 0" />
+        <path d="M52 10q6-7 12 0q6-7 12 0" />
+        <path d="M86 32q5-6 10 0q5-6 10 0" />
+      </svg>
+      <div className="spring-edge" />
     </>
+  );
+}
+
+/** "DePaul AI" set in a pink label block, like the flyers' "DePaul AI Recap". */
+export function Title({ title }: { title: string }) {
+  return (
+    <h1 className="hero-title">
+      <span className="label-block">{title}</span>
+    </h1>
   );
 }

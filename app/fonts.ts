@@ -4,6 +4,7 @@ import {
   Bricolage_Grotesque,
   Geist,
   Geist_Mono,
+  Libre_Baskerville,
   Newsreader,
   Old_Standard_TT,
   Special_Elite,
@@ -22,8 +23,9 @@ const oldStandard = Old_Standard_TT({ variable: "--font-old-standard", weight: [
 const specialElite = Special_Elite({ variable: "--font-special-elite", weight: "400", subsets: ["latin"], preload: false });
 const newsreader = Newsreader({ variable: "--font-newsreader", subsets: ["latin"], preload: false });
 const unbounded = Unbounded({ variable: "--font-unbounded", subsets: ["latin"], preload: false });
+const baskerville = Libre_Baskerville({ variable: "--font-baskerville", weight: ["400", "700"], style: ["normal", "italic"], subsets: ["latin"], preload: false });
 const bricolage = Bricolage_Grotesque({ variable: "--font-bricolage", subsets: ["latin"], preload: false });
 
-export const fontVariables = [geist, geistMono, abril, anton, oldStandard, specialElite, newsreader, unbounded, bricolage]
+export const fontVariables = [geist, geistMono, abril, anton, oldStandard, specialElite, newsreader, unbounded, bricolage, baskerville]
   .map((f) => f.variable)
   .join(" ");

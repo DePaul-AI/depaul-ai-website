@@ -1,6 +1,7 @@
 /**
  * Generates default logos for themes that don't have an official one yet
- * (public/themes/<theme>/logo.svg), plus the fall-2026 foliage texture.
+ * (public/themes/<theme>/logo.svg), plus theme textures: the fall-2026
+ * foliage and the spring-2026 watercolor wash and map scrap.
  * Themes with an official logo (fall-2026, spring-2026) ship it as logo.png
  * and are not touched.
  *
@@ -130,6 +131,42 @@ logos["winter-2027"] = svg(`
 logos["off-season"] = svg(`<radialGradient id="g" cx=".3" cy=".25" r=".9"><stop offset="0" stop-color="#1e3a8a"/><stop offset=".55" stop-color="#0d0d1a"/><stop offset="1" stop-color="#07070c"/></radialGradient>`, `
   <rect width="512" height="512" fill="url(#g)"/>
   ${wordmark("#ffffff")}`);
+
+// ---- spring-2026 textures: watercolor wash and a vintage map scrap -----------
+{
+  seed = 412;
+  const W = 1400, H = 900;
+  const colors = ["#f7b3cd", "#d8c2f3", "#fcd2b2", "#fbe5a0", "#b7daf5", "#f39fc0", "#e6b6ea", "#c9e7c6"];
+  let strokes = "";
+  for (let i = 0; i < 72; i++) {
+    const x = rnd() * W, y = rnd() * H, len = 260 + rnd() * 520, ang = -0.5 + rnd() * 0.7;
+    const dx = Math.cos(ang) * len, dy = Math.sin(ang) * len, bend = (rnd() - 0.5) * 220;
+    const c = colors[Math.floor(rnd() * colors.length)];
+    strokes += `<path d="M${r1(x)} ${r1(y)}q${r1(dx / 2)} ${r1(dy / 2 + bend)} ${r1(dx)} ${r1(dy)}" stroke="${c}" stroke-width="${r1(50 + rnd() * 110)}" stroke-linecap="round" fill="none" opacity="${(0.45 + rnd() * 0.4).toFixed(2)}"/>`;
+  }
+  const wash = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" preserveAspectRatio="xMidYMid slice"><defs>
+  <filter id="paint" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".012 .03" numOctaves="3" seed="9"/><feDisplacementMap in="SourceGraphic" scale="46"/><feGaussianBlur stdDeviation="7"/></filter>
+  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="2"/><feColorMatrix values="0 0 0 0 .4  0 0 0 0 .3  0 0 0 0 .35  0 0 0 .18 0"/><feComposite in2="SourceGraphic" operator="in"/></filter>
+  </defs><rect width="${W}" height="${H}" fill="#f8eef3"/><g filter="url(#paint)">${strokes}</g><rect width="${W}" height="${H}" fill="#fff" filter="url(#grain)"/></svg>\n`;
+  writeFileSync(path.join(root, "public/themes/spring-2026/watercolor.svg"), wash);
+  console.log("public/themes/spring-2026/watercolor.svg");
+
+  // Vintage map: wandering contour lines, a river, dashed roads.
+  const MW = 520, MH = 380;
+  const wander = (x, y, steps, step, turn) => {
+    let a = rnd() * Math.PI * 2, d = `M${r1(x)} ${r1(y)}`;
+    for (let i = 0; i < steps; i++) { a += (rnd() - 0.5) * turn; x += Math.cos(a) * step; y += Math.sin(a) * step; d += `L${r1(x)} ${r1(y)}`; }
+    return d;
+  };
+  let lines = "";
+  for (let i = 0; i < 26; i++) lines += `<path d="${wander(rnd() * MW, rnd() * MH, 30, 9, 0.7)}" stroke="#6f6450" stroke-width=".7" fill="none" opacity=".55"/>`;
+  for (let i = 0; i < 5; i++) lines += `<path d="${wander(rnd() * MW, rnd() * MH, 40, 12, 0.35)}" stroke="#5a5040" stroke-width="1.1" stroke-dasharray="5 3" fill="none" opacity=".6"/>`;
+  lines += `<path d="${wander(0, MH * 0.6, 60, 10, 0.4)}" stroke="#7a9cb0" stroke-width="2.4" fill="none" opacity=".55"/>`;
+  for (let i = 0; i < 9; i++) lines += `<circle cx="${r1(rnd() * MW)}" cy="${r1(rnd() * MH)}" r="2.2" fill="#5a5040" opacity=".6"/>`;
+  const map = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${MW} ${MH}" width="${MW}" height="${MH}"><rect width="${MW}" height="${MH}" fill="#efe7d6"/>${lines}</svg>\n`;
+  writeFileSync(path.join(root, "public/themes/spring-2026/map.svg"), map);
+  console.log("public/themes/spring-2026/map.svg");
+}
 
 // Seamless foliage tile for the fall theme's hero background.
 {
