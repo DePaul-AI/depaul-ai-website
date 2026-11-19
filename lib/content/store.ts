@@ -40,7 +40,7 @@ export async function updateContent<K extends ContentKey>(
   if (isLocalStore()) {
     const current = schema.parse(JSON.parse(await readLocal(key))) as ContentData[K];
     const next = schema.parse(mutate(current));
-    await fs.writeFile(path.join(process.cwd(), filePath), serialize(next));
+    await fs.writeFile(localPath(key), serialize(next));
     return {};
   }
 
@@ -74,7 +74,12 @@ function serialize(data: unknown) {
 }
 
 async function readLocal(key: ContentKey) {
-  return fs.readFile(path.join(process.cwd(), CONTENT_FILES[key].path), "utf8");
+  return fs.readFile(localPath(key), "utf8");
+}
+
+// Scoped to /content so the bundler doesn't trace the whole project.
+function localPath(key: ContentKey) {
+  return path.join(process.cwd(), "content", path.basename(CONTENT_FILES[key].path));
 }
 
 function branch() {
