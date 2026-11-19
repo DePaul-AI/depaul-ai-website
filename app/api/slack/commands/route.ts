@@ -1,7 +1,7 @@
 import { after } from "next/server";
 import { verifySlackRequest, channelAllowed, userAllowed } from "@/lib/slack/verify";
 import { notify, respond, siteUrl } from "@/lib/slack/api";
-import { clearSiteField, findItem, listBlocks, openModal, removeItem, setTheme } from "@/lib/slack/handlers";
+import { clearSiteField, findItem, listBlocks, openModal, removeItem, resetLogo, setTheme } from "@/lib/slack/handlers";
 import { THEMES, THEME_IDS, type ThemeId } from "@/lib/themes";
 
 /**
@@ -18,6 +18,7 @@ const HELP = [
   "`/dai announce` — banner across the top of the site (`/dai announce clear` to remove)",
   "`/dai link` — pin a link button (join form, Discord, …)",
   `\`/dai theme\` — switch the seasonal theme (${THEME_IDS.join(", ")})`,
+  "`/dai logo` — upload the logo for a theme (`/dai logo reset` to use the built-in one)",
   "`/dai list` — see what's on the site, edit or remove things",
   "",
   "_Tip: on any message, choose ⋯ → *Post to website* to turn it into an update._",
@@ -88,6 +89,14 @@ export async function POST(request: Request) {
           return later(() => setTheme(arg as ThemeId, by));
         }
         await openModal("theme", triggerId, { channel });
+        return empty();
+      case "logo":
+        if (arg.startsWith("reset")) {
+          const theme = arg.split(" ")[1];
+          if (theme && !(theme in THEMES)) return reply(`Unknown theme \`${theme}\`. Try one of: ${THEME_IDS.join(", ")}`);
+          return later(() => resetLogo(theme as ThemeId | undefined, by));
+        }
+        await openModal("logo", triggerId, { channel });
         return empty();
       case "list":
         // Reading from GitHub can be slow, so send the list via response_url.

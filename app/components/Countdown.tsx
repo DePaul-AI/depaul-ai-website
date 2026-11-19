@@ -16,7 +16,7 @@ export default function Countdown({ target }: { target: string }) {
   const remaining = now === null ? null : Math.max(0, Math.floor(Date.parse(target) / 1000) - now);
 
   if (remaining === 0) {
-    return <p className="font-mono text-2xl text-accent sm:text-3xl">Happening now</p>;
+    return <p className="countdown-digit">Happening now</p>;
   }
 
   const units = [
@@ -29,11 +29,9 @@ export default function Countdown({ target }: { target: string }) {
   return (
     <div className="flex gap-3 sm:gap-5" role="timer" aria-live="off">
       {units.map((u) => (
-        <div key={u.label} className="flex min-w-14 flex-col items-center sm:min-w-20">
-          <span className="font-mono text-4xl font-medium tabular-nums text-accent sm:text-6xl">
-            {u.value === null ? "--" : String(u.value).padStart(2, "0")}
-          </span>
-          <span className="mt-1 text-xs uppercase tracking-[0.2em] text-muted">{u.label}</span>
+        <div key={u.label} className="countdown-unit flex min-w-14 flex-col items-center sm:min-w-20">
+          <span className="countdown-digit">{u.value === null ? "--" : String(u.value).padStart(2, "0")}</span>
+          <span className="countdown-label mt-1 text-xs tracking-[0.2em] text-muted uppercase">{u.label}</span>
         </div>
       ))}
     </div>

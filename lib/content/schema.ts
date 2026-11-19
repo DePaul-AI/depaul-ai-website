@@ -10,6 +10,10 @@ import { THEME_IDS } from "../themes";
 
 const url = z.url({ protocol: /^https?$/, message: "Must be a full http(s) URL" });
 const isoDate = z.iso.datetime({ offset: true, message: "Must be an ISO date-time" });
+/** An image uploaded through Slack, stored in public/uploads. */
+export const UPLOAD_PATTERN = /^\/uploads\/[a-z0-9-]+\.(png|jpe?g|gif|webp)$/;
+const upload = z.string().regex(UPLOAD_PATTERN, "Must be an uploaded image path");
+
 const id = z
   .string()
   .regex(/^[a-z0-9-]+$/, "Lowercase letters, numbers and dashes only");
@@ -33,6 +37,11 @@ export const announcementSchema = z.object({
 
 export const siteSchema = z.object({
   theme: z.enum(THEME_IDS),
+  /**
+   * Custom logo per theme (uploaded with `/dai logo`). Themes without one use
+   * their designed default in public/logos/<theme>.svg.
+   */
+  logos: z.partialRecord(z.enum(THEME_IDS), upload).default({}),
   hero: z.object({
     title: z.string().min(1),
     tagline: z.string().min(1),
@@ -58,6 +67,8 @@ export const eventSchema = z.object({
   description: z.string().max(1000).optional(),
   /** RSVP / details link */
   link: url.optional(),
+  /** Flyer or photo */
+  image: upload.optional(),
 });
 
 export const postSchema = z.object({
@@ -65,6 +76,7 @@ export const postSchema = z.object({
   title: z.string().min(1).max(140),
   body: z.string().max(2000).optional(),
   link: url.optional(),
+  image: upload.optional(),
   date: isoDate,
 });
 

@@ -11,8 +11,8 @@
 ---
 
 The site is built so that **nobody has to touch code to keep it current**. Events,
-the main countdown, news updates, pinned links, the top banner and the seasonal
-theme are all edited from Slack with `/dai`.
+the main countdown, news updates, pinned links, the top banner, the seasonal
+theme and the logo are all edited from Slack with `/dai`.
 
 ## Updating the site (for board members)
 
@@ -20,17 +20,19 @@ In the website channel in Slack:
 
 | Command | What it does |
 | --- | --- |
-| `/dai event` | Add an event (name, time, place, description, RSVP link) |
-| `/dai post` | Share an update on the news feed, optionally with a link |
+| `/dai event` | Add an event (name, time, place, description, RSVP link, flyer image) |
+| `/dai post` | Share an update on the news feed, optionally with a link and image |
 | `/dai countdown` | Set the big countdown at the top. `/dai countdown clear` makes it follow the next event automatically |
 | `/dai announce` | Show a banner across the top of the site. `/dai announce clear` removes it |
 | `/dai link` | Pin a link button (join form, Discord, …) |
 | `/dai theme` | Switch the seasonal theme. Also works as `/dai theme winter` |
+| `/dai logo` | Upload the logo for a theme. `/dai logo reset` goes back to the theme's built-in logo |
 | `/dai list` | See what's on the site, with **Edit** and **Remove** buttons |
 | `/dai` | Help |
 
 You can also hover any Slack message → **⋯** → **Post to website** to turn it into
-an update (the first line becomes the headline, the first link becomes the link).
+an update (the first line becomes the headline, the first link becomes the link, and
+an attached image comes along).
 
 Changes go live about a minute after you save. The bot confirms each change in the channel.
 
@@ -44,8 +46,11 @@ Slack /dai ──► /api/slack/* (this Next.js app) ──► commits to conten
                                      hosting redeploys on push ◄┘
 ```
 
-- All editable content lives in [`content/`](content): `site.json` (theme, hero, countdown,
-  banner, links), `events.json`, and `posts.json`. You can also edit these directly on GitHub.
+- All editable content lives in [`content/`](content): `site.json` (theme, logos, hero,
+  countdown, banner, links), `events.json`, and `posts.json`. You can also edit these
+  directly on GitHub.
+- Images uploaded in Slack are saved to `public/uploads/` in the same commit as the change
+  that uses them.
 - Every file is checked against [`lib/content/schema.ts`](lib/content/schema.ts) both by the
   bot before it commits and by the build. A bad edit fails the build, and the last good
   version stays live.
@@ -53,14 +58,33 @@ Slack /dai ──► /api/slack/* (this Next.js app) ──► commits to conten
   there's a full history and anything can be reverted.
 - Times are shown in Chicago time.
 
-### Themes
+### Themes and logos
 
-Themes are defined in [`lib/themes.ts`](lib/themes.ts): `fall`, `winter`, `spring`, `summer`,
-and `midnight` (off-season). Each one is a small set of colors: background, surface,
-text, accent, and three "glow" colors for the hero. To add a theme, add an entry there.
-It shows up in the `/dai theme` picker automatically. In components, use the theme color
-classes (`bg-bg`, `bg-surface`, `text-muted`, `text-accent`, `border-line`…) instead of
-hard-coded colors.
+Each quarter gets its own look, not just its own colors:
+
+| Theme | Look |
+| --- | --- |
+| `fall` | Newspaper cut-outs and handmade collage: ransom-note title, tape, clippings, ink stamp |
+| `winter` | Liquid metal with a cyber edge: chrome type, mercury blobs, grid, HUD readouts |
+| `spring` | Color explosion, a louder remix of the original pastel logo: sticker type, confetti, chunky cards |
+| `summer`, `midnight` | Simple glow themes (summer break / off-season) |
+
+A theme is made of:
+
+- **Colors** in [`lib/themes.ts`](lib/themes.ts) (the id there is what `/dai theme` lists)
+- **Styles** in `app/themes/<theme>.css`. Components use shared classes (`.card`,
+  `.btn-primary`, `.section-title`, `.countdown-box`, `.hero-title`…) defined in
+  [`app/globals.css`](app/globals.css), and each theme restyles them under
+  `[data-theme="<theme>"]`. Fonts are picked there too (all loaded in [`app/fonts.ts`](app/fonts.ts)).
+- **Hero decoration** in [`app/themes/Decor.tsx`](app/themes/Decor.tsx) (optional; falls back to a soft glow)
+- **A default logo** at `public/logos/<theme>.svg`
+
+Logos follow the theme: switching to winter shows the winter logo, favicon included.
+Upload a replacement for any theme with `/dai logo`; the built-in SVG is used when
+there's no upload. To redesign a built-in logo, replace its SVG file.
+
+To add a theme: add colors in `lib/themes.ts`, a logo SVG in `public/logos/`, and
+optionally a CSS file (imported in `app/layout.tsx`) and a `Decor` entry.
 
 ## One-time setup
 

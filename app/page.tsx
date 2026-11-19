@@ -1,9 +1,11 @@
-import Image from "next/image";
 import { IconArrowUpRight, IconSpeakerphone } from "@tabler/icons-react";
 import { activeCountdown, site, sortedPosts, splitEvents } from "@/lib/content";
 import { currentYear, longDate, time } from "@/lib/format";
 import { THEMES } from "@/lib/themes";
 import Countdown from "./components/Countdown";
+import Logo from "./components/Logo";
+import Decor from "./themes/Decor";
+import HeroTitle from "./themes/HeroTitle";
 import EventItem from "./components/EventItem";
 import PostItem from "./components/PostItem";
 import Socials from "./components/Socials";
@@ -21,7 +23,7 @@ export default function Home() {
   return (
     <>
       {site.announcement && (
-        <div className="bg-accent px-4 py-2 text-center text-sm font-medium text-accent-fg">
+        <div className="banner">
           <IconSpeakerphone size={16} className="mr-1.5 inline -translate-y-px" />
           {site.announcement.link ? (
             <a href={site.announcement.link} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
@@ -33,10 +35,10 @@ export default function Home() {
         </div>
       )}
 
-      <header className="sticky top-0 z-20 border-b border-line/60 bg-bg/75 backdrop-blur-md">
+      <header className="site-header">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
-          <a href="#top" className="flex items-center gap-2.5 font-semibold">
-            <Image src="/dai-logo.png" alt="" width={32} height={32} className="rounded-lg" />
+          <a href="#top" className="flex items-center gap-2.5 font-display font-semibold">
+            <Logo className="relative size-8 overflow-hidden rounded-lg" sizes="32px" />
             {site.hero.title}
           </a>
           <nav className="flex items-center gap-1 text-sm sm:gap-4">
@@ -50,46 +52,42 @@ export default function Home() {
 
       <main id="top">
         {/* Hero */}
-        <section className="relative overflow-hidden">
-          <div className="glow" aria-hidden />
-          <div className="relative mx-auto flex max-w-5xl flex-col items-start gap-8 px-4 pt-20 pb-24 sm:px-6 sm:pt-28 sm:pb-32">
-            <p className="rounded-full border border-line bg-bg/40 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-muted backdrop-blur">
-              {theme.season} {site.theme !== "midnight" && currentYear()}
-            </p>
-            <div>
-              <h1 className="text-5xl font-semibold tracking-tight sm:text-7xl">{site.hero.title}</h1>
-              <p className="mt-4 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">{site.hero.tagline}</p>
+        <section className="hero relative overflow-hidden">
+          <Decor theme={site.theme} />
+          <div className="relative mx-auto flex max-w-5xl flex-col gap-10 px-4 pt-16 pb-24 sm:px-6 sm:pt-24 sm:pb-32 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-col items-start gap-8">
+              <p className="hero-eyebrow">
+                {theme.season} {site.theme !== "midnight" && currentYear()}
+              </p>
+              <div>
+                <HeroTitle theme={site.theme} title={site.hero.title} />
+                <p className="hero-tagline mt-5 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">{site.hero.tagline}</p>
+              </div>
+
+              {countdown ? (
+                <div className="countdown-box">
+                  <p className="text-sm tracking-[0.2em] text-muted uppercase">Counting down to</p>
+                  <p className="mt-1 font-display text-xl font-semibold sm:text-2xl">{countdown.label}</p>
+                  <p className="text-sm text-muted">
+                    {longDate(countdown.target)} · {time(countdown.target)}
+                  </p>
+                  <div className="mt-6">
+                    <Countdown target={countdown.target} />
+                  </div>
+                  {countdown.link && (
+                    <a href={countdown.link} target="_blank" rel="noopener noreferrer" className="btn-primary mt-6">
+                      Learn more <IconArrowUpRight size={16} />
+                    </a>
+                  )}
+                </div>
+              ) : (
+                <a href="#updates" className="btn-primary">
+                  See what we&apos;re up to
+                </a>
+              )}
             </div>
 
-            {countdown ? (
-              <div className="w-full max-w-xl rounded-3xl border border-line bg-bg/50 p-6 backdrop-blur-md sm:p-8">
-                <p className="text-sm uppercase tracking-[0.2em] text-muted">Counting down to</p>
-                <p className="mt-1 text-xl font-semibold sm:text-2xl">{countdown.label}</p>
-                <p className="text-sm text-muted">
-                  {longDate(countdown.target)} · {time(countdown.target)}
-                </p>
-                <div className="mt-6">
-                  <Countdown target={countdown.target} />
-                </div>
-                {countdown.link && (
-                  <a
-                    href={countdown.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-6 inline-flex items-center gap-1 rounded-full bg-accent px-5 py-2 text-sm font-medium text-accent-fg transition hover:opacity-90"
-                  >
-                    Learn more <IconArrowUpRight size={16} />
-                  </a>
-                )}
-              </div>
-            ) : (
-              <a
-                href="#updates"
-                className="inline-flex items-center gap-1 rounded-full bg-accent px-5 py-2 text-sm font-medium text-accent-fg transition hover:opacity-90"
-              >
-                See what we&apos;re up to
-              </a>
-            )}
+            <Logo className="hero-logo order-first lg:order-none" sizes="(min-width: 1024px) 288px, 160px" priority />
           </div>
         </section>
 
@@ -135,7 +133,7 @@ export default function Home() {
                         href={l.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded-xl border border-line bg-surface px-4 py-3 transition hover:border-accent hover:text-accent"
+                        className="card link-card flex items-center justify-between px-4 py-3 transition hover:text-accent"
                       >
                         {l.label}
                         <IconArrowUpRight size={18} className="shrink-0" />
@@ -174,5 +172,5 @@ export default function Home() {
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h2 className="mb-6 text-sm font-medium uppercase tracking-[0.2em] text-muted">{children}</h2>;
+  return <h2 className="section-title">{children}</h2>;
 }
