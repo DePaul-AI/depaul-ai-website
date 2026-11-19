@@ -25,5 +25,13 @@
     "location": "Levan 406",
     "description": "DePaul AI is back with Spaces #2, with food!\nthis time we’re playing a little game, testing your eye,\nand getting into why it’s becoming harder and harder to tell what’s real and what isn’t.",
     "image": "/uploads/spaces-can-you-spot-the-ai-a9memu.png"
+  },
+  {
+    "id": "tinkering-your-ai-your-rules-5bng",
+    "title": "Tinkering: Your AI, Your Rules",
+    "start": "2026-05-21T22:00:00.000Z",
+    "end": "2026-05-22T00:00:00.000Z",
+    "location": "DePaul Center 8014",
+    "description": "DePaul AI Tinkerings is here and for our first session we're running AI locally, right on your own laptop.\nNo big tech servers, no data in the cloud, no energy wasted on someone else's infrastructure.\nJust you, your machine, and full control over what you're running."
   }
 ]
