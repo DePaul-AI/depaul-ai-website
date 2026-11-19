@@ -1,5 +1,5 @@
 import "server-only";
-import { THEMES, THEME_IDS, type ThemeId } from "../themes";
+import { THEMES, THEME_IDS, type ThemeId } from "../../themes";
 import type { Announcement, Countdown, Post, SiteEvent, SiteLink } from "../content/schema";
 
 /**

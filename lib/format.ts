@@ -32,4 +32,4 @@ export function googleCalendarUrl(e: SiteEvent) {
 }
 
 /** Current year in Chicago, for "Fall Quarter 2026". */
-export const currentYear = () => part(new Date().toISOString(), { year: "numeric" });
+

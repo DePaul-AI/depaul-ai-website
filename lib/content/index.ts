@@ -9,9 +9,6 @@ import {
   type SiteEvent,
 } from "./schema";
 
-import { eraFor } from "../eras";
-import type { ThemeId } from "../themes";
-
 export * from "./schema";
 
 /** All dates on the site are shown in Chicago time. */
@@ -34,21 +31,6 @@ export function splitEvents(now = Date.now()) {
     upcoming: sorted.filter((e) => eventEnd(e) >= now),
     past: sorted.filter((e) => eventEnd(e) < now).reverse(),
   };
-}
-
-/**
- * Past events grouped by the era (quarter) they happened in, newest first,
- * so each group can be shown in that quarter's theme.
- */
-export function archive(now = Date.now()) {
-  const groups: { theme: ThemeId; label: string; events: SiteEvent[] }[] = [];
-  for (const e of splitEvents(now).past) {
-    const era = eraFor(e.start, site.eras);
-    const last = groups.at(-1);
-    if (last && last.label === era.label && last.theme === era.theme) last.events.push(e);
-    else groups.push({ ...era, events: [e] });
-  }
-  return groups;
 }
 
 export function sortedPosts() {

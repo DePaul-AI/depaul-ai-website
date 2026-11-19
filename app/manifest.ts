@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/lib/content";
-import { THEMES } from "@/lib/themes";
+import { THEMES } from "@/themes";
 
 export default function manifest(): MetadataRoute.Manifest {
-  const bg = THEMES[site.theme].tokens.bg;
+  const bg = THEMES[site.theme].background;
   return {
     name: "DePaul AI",
     short_name: "DePaul AI",

@@ -3,9 +3,24 @@
  * Chrome type, morphing mercury blobs, a fading grid, HUD readouts and
  * scanlines, in blue, silver and white.
  */
-/* Scoped so a nested [data-theme] (e.g. an archived event from another quarter)
-   only ever gets its own theme's styles. */
-@scope ([data-theme="winter"]) to ([data-theme]) {
+/* Everything is scoped to this theme. A nested [data-theme] (a past event card
+   from another quarter) gets its own theme's styles instead. */
+@scope ([data-theme="winter-2027"]) to ([data-theme]) {
+  /* ---- palette ---------------------------------------------------------- */
+  :scope {
+    color-scheme: dark;
+    --bg: #05080f;
+    --surface: #0b1220;
+    --line: #22324a;
+    --fg: #eef4ff;
+    --muted: #93a5c2;
+    --accent: #a9d1ff;
+    --accent-fg: #04101f;
+    --glow-1: #2563eb;
+    --glow-2: #94a3b8;
+    --glow-3: #0ea5e9;
+  }
+
   :scope {
     --font-heading: var(--font-unbounded), ui-sans-serif, sans-serif;
     --chrome: linear-gradient(180deg, #ffffff 0%, #dbe5f2 30%, #7d8ca6 46%, #26324a 50%, #eaf2ff 55%, #9cc4f5 78%, #ffffff 100%);
@@ -77,9 +92,9 @@
     backdrop-filter: blur(12px);
   }
   .countdown-box::before,
-  li.card:not(.link-card)::before,
+  .event-card::before,
   .countdown-box::after,
-  li.card:not(.link-card)::after {
+  .event-card::after {
     content: "";
     position: absolute;
     width: 14px;
@@ -87,14 +102,14 @@
     border: 2px solid var(--accent);
   }
   .countdown-box::before,
-  li.card:not(.link-card)::before {
+  .event-card::before {
     top: -1px;
     left: -1px;
     border-right: 0;
     border-bottom: 0;
   }
   .countdown-box::after,
-  li.card:not(.link-card)::after {
+  .event-card::after {
     right: -1px;
     bottom: -1px;
     border-left: 0;
@@ -222,23 +237,6 @@
     animation: winter-scan 7s linear infinite;
   }
 
-  /* Archived winter quarter: a HUD panel over the grid */
-  :scope.era {
-    border-radius: 6px;
-    border-color: var(--edge);
-    background:
-      linear-gradient(rgb(143 180 230 / 0.07) 1px, transparent 1px) 0 0 / 32px 32px,
-      linear-gradient(90deg, rgb(143 180 230 / 0.07) 1px, transparent 1px) 0 0 / 32px 32px,
-      radial-gradient(80% 60% at 80% 0%, rgb(37 99 235 / 0.25), transparent 70%),
-      var(--bg);
-  }
-  .era-summary > :first-child {
-    background: var(--chrome);
-    background-size: 100% 200%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
 }
 
 @keyframes winter-sheen {

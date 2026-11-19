@@ -4,9 +4,24 @@
  * shadows, chunky outlines and confetti. Still TBD, so it's easy to retune
  * by changing the --pop colors below.
  */
-/* Scoped so a nested [data-theme] (e.g. an archived event from another quarter)
-   only ever gets its own theme's styles. */
-@scope ([data-theme="spring"]) to ([data-theme]) {
+/* Everything is scoped to this theme. A nested [data-theme] (a past event card
+   from another quarter) gets its own theme's styles instead. */
+@scope ([data-theme="spring-2027"]) to ([data-theme]) {
+  /* ---- palette ---------------------------------------------------------- */
+  :scope {
+    color-scheme: light;
+    --bg: #fff6ec;
+    --surface: #ffffff;
+    --line: #f0d9c8;
+    --fg: #1d1030;
+    --muted: #6b5a73;
+    --accent: #ff2d87;
+    --accent-fg: #ffffff;
+    --glow-1: #ff2d87;
+    --glow-2: #ffd400;
+    --glow-3: #00b8ff;
+  }
+
   :scope {
     --font-body: var(--font-bricolage), ui-sans-serif, sans-serif;
     --font-heading: var(--font-bricolage), ui-sans-serif, sans-serif;
@@ -76,12 +91,12 @@
     --pop: var(--pop-2);
     box-shadow: 9px 9px 0 var(--pop);
   }
-  li:nth-child(6n + 1) > .card, li.card:nth-child(6n + 1) { --pop: var(--pop-1); }
-  li:nth-child(6n + 2) > .card, li.card:nth-child(6n + 2) { --pop: var(--pop-3); }
-  li:nth-child(6n + 3) > .card, li.card:nth-child(6n + 3) { --pop: var(--pop-4); }
-  li:nth-child(6n + 4) > .card, li.card:nth-child(6n + 4) { --pop: var(--pop-5); }
-  li:nth-child(6n + 5) > .card, li.card:nth-child(6n + 5) { --pop: var(--pop-6); }
-  li:nth-child(6n + 6) > .card, li.card:nth-child(6n + 6) { --pop: var(--pop-2); }
+  li:nth-child(6n + 1) > .card { --pop: var(--pop-1); }
+  li:nth-child(6n + 2) > .card { --pop: var(--pop-3); }
+  li:nth-child(6n + 3) > .card { --pop: var(--pop-4); }
+  li:nth-child(6n + 4) > .card { --pop: var(--pop-5); }
+  li:nth-child(6n + 5) > .card { --pop: var(--pop-6); }
+  li:nth-child(6n + 6) > .card { --pop: var(--pop-2); }
   .card { transition: translate 0.15s, box-shadow 0.15s; }
   .link-card:hover {
     color: var(--ink);
@@ -178,21 +193,6 @@
   .spring-confetti-1 { width: 22px; height: 9px; border-radius: 9999px; }
   .spring-confetti-2 { clip-path: polygon(50% 0, 100% 100%, 0 100%); border: 0; }
 
-  /* Archived spring quarter: a sticker sheet bursting with color */
-  :scope.era {
-    border: 2.5px solid var(--ink);
-    border-radius: 24px;
-    background:
-      radial-gradient(30% 50% at 0% 0%, rgb(255 45 135 / 0.35), transparent 70%),
-      radial-gradient(30% 50% at 100% 0%, rgb(255 212 0 / 0.4), transparent 70%),
-      radial-gradient(40% 60% at 100% 100%, rgb(0 184 255 / 0.3), transparent 70%),
-      var(--bg);
-    box-shadow: 8px 8px 0 var(--pop-5);
-  }
-  .era-summary > :first-child {
-    padding: 0 0.3em;
-    background: linear-gradient(transparent 45%, var(--pop-2) 45%, var(--pop-2) 90%, transparent 90%);
-  }
 }
 
 @keyframes spring-pulse {

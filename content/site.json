@@ -1,20 +1,6 @@
 {
-  "theme": "fall",
+  "theme": "fall-2026",
   "logos": {},
-  "eras": [
-    {
-      "theme": "spring",
-      "label": "Spring 2026",
-      "start": "2026-03-28T05:00:00.000Z",
-      "end": "2026-06-23T05:00:00.000Z"
-    },
-    {
-      "theme": "fall",
-      "label": "Fall 2026",
-      "start": "2026-09-01T05:00:00.000Z",
-      "end": "2026-12-02T06:00:00.000Z"
-    }
-  ],
   "hero": {
     "title": "DePaul AI",
     "tagline": "A student community at DePaul University exploring artificial intelligence — together."

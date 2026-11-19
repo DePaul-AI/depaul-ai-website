@@ -3,9 +3,24 @@
  * Autumn foliage, black construction paper with torn edges, magazine pages,
  * cobalt scraps, and ransom-note letters cut from white and blue paper.
  */
-/* Scoped so a nested [data-theme] (e.g. an archived event from another quarter)
-   only ever gets its own theme's styles. */
-@scope ([data-theme="fall"]) to ([data-theme]) {
+/* Everything is scoped to this theme. A nested [data-theme] (a past event card
+   from another quarter) gets its own theme's styles instead. */
+@scope ([data-theme="fall-2026"]) to ([data-theme]) {
+  /* ---- palette ---------------------------------------------------------- */
+  :scope {
+    color-scheme: light;
+    --bg: #ebe3d2;
+    --surface: #f8f4ea;
+    --line: #c8baa0;
+    --fg: #1c1814;
+    --muted: #5e5448;
+    --accent: #c2471b;
+    --accent-fg: #fff8ef;
+    --glow-1: #d4572a;
+    --glow-2: #e0a526;
+    --glow-3: #7a2e1a;
+  }
+
   :scope {
     --font-body: var(--font-newsreader), Georgia, serif;
     --font-heading: var(--font-abril), Georgia, serif;
@@ -57,8 +72,8 @@
   .hero-eyebrow { --t: 4px; --len: 34px; }
 
   /* Parents that cast the paper shadows */
-  ul:has(> li.card),
-  ul:has(> li > .card),
+  :scope:has(> .card),
+  li:has(> .card),
   .countdown-wrap,
   .hero-copy {
     filter: var(--paper-shadow);
@@ -78,7 +93,7 @@
 
   /* ---- hero ------------------------------------------------------------------ */
   .hero {
-    background: #3a1508 url("/themes/fall-foliage.svg") center / 560px 560px;
+    background: #3a1508 url("/themes/fall-2026/foliage.svg") center / 560px 560px;
     padding-bottom: 1.5rem;
   }
 
@@ -187,11 +202,11 @@
     border-radius: 0;
     background: var(--paper);
   }
-  li.card:nth-child(odd) { rotate: -0.4deg; }
-  li.card:nth-child(even) { rotate: 0.5deg; }
+  li:nth-child(odd) > .event-card { rotate: -0.4deg; }
+  li:nth-child(even) > .event-card { rotate: 0.5deg; }
   .link-card { font-family: var(--font-special-elite), monospace; }
-  li:has(> .link-card):nth-child(odd) { rotate: -0.4deg; }
-  li:has(> .link-card):nth-child(even) { rotate: 0.5deg; }
+  li:nth-child(odd) > .link-card { rotate: -0.4deg; }
+  li:nth-child(even) > .link-card { rotate: 0.5deg; }
   .link-card:hover { color: var(--cobalt); }
 
   .date-tile {
@@ -296,28 +311,5 @@
 
   .content-grid { padding-top: 2.5rem; }
 
-  /* Archived fall quarter: cards pinned to a bed of leaves */
-  :scope.era {
-    border: 0;
-    border-radius: 0;
-    background: #3a1508 url("/themes/fall-foliage.svg") center / 420px 420px;
-    --t: 9px;
-    --len: 90px;
-    mask:
-      var(--torn-top) top left / var(--len) var(--t) repeat-x,
-      var(--torn-bottom) bottom left / var(--len) var(--t) repeat-x,
-      var(--torn-left) top left / var(--t) var(--len) repeat-y,
-      var(--torn-right) top right / var(--t) var(--len) repeat-y,
-      linear-gradient(#000 0 0) center / calc(100% - 2 * var(--t) + 2px) calc(100% - 2 * var(--t) + 2px) no-repeat;
-  }
-  .era-summary {
-    width: fit-content;
-    padding: 0.4rem 1rem;
-    background: var(--ink);
-    color: var(--paper);
-    rotate: -1deg;
-  }
-  .era-summary .text-muted { color: #e8d9bd; }
-  :scope.era ul { filter: var(--paper-shadow); }
 }
 

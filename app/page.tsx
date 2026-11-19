@@ -1,12 +1,12 @@
-import { IconArrowUpRight, IconChevronDown, IconSpeakerphone } from "@tabler/icons-react";
-import { activeCountdown, archive, site, sortedPosts, splitEvents } from "@/lib/content";
-import { currentYear, longDate, time } from "@/lib/format";
-import { THEMES, themeStyle } from "@/lib/themes";
+import { IconArrowUpRight, IconSpeakerphone } from "@tabler/icons-react";
+import { activeCountdown, site, sortedPosts, splitEvents } from "@/lib/content";
+import { longDate, time } from "@/lib/format";
+import { THEMES } from "@/themes";
+import { HERO } from "@/themes/hero";
 import Countdown from "./components/Countdown";
 import Logo from "./components/Logo";
-import Decor from "./themes/Decor";
-import HeroTitle from "./themes/HeroTitle";
 import EventItem from "./components/EventItem";
+import EventsTabs from "./components/EventsTabs";
 import PostItem from "./components/PostItem";
 import Socials from "./components/Socials";
 
@@ -15,11 +15,11 @@ import Socials from "./components/Socials";
 export const revalidate = 900;
 
 export default function Home() {
-  const { upcoming } = splitEvents();
-  const eras = archive();
+  const { upcoming, past } = splitEvents();
   const countdown = activeCountdown();
   const posts = sortedPosts().slice(0, 10);
   const theme = THEMES[site.theme];
+  const { Decor, Title } = HERO[site.theme] ?? {};
 
   return (
     <>
@@ -54,20 +54,24 @@ export default function Home() {
       <main id="top">
         {/* Hero */}
         <section className="hero relative overflow-hidden">
-          <Decor theme={site.theme} />
+          {Decor && (
+            <div aria-hidden className="hero-decor pointer-events-none absolute inset-0 overflow-hidden select-none">
+              <Decor />
+            </div>
+          )}
           <div className="relative mx-auto flex max-w-5xl flex-col gap-10 px-4 pt-16 pb-24 sm:px-6 sm:pt-24 sm:pb-32 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-col items-start gap-8">
               <p className="hero-eyebrow">
-                {theme.season} {site.theme !== "midnight" && currentYear()}
+                {theme.season}
               </p>
               <div className="hero-copy">
-                <HeroTitle theme={site.theme} title={site.hero.title} />
+                {Title ? <Title title={site.hero.title} /> : <h1 className="hero-title">{site.hero.title}</h1>}
                 <p className="hero-tagline mt-5 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">{site.hero.tagline}</p>
               </div>
 
               {countdown ? (
                 <div className="countdown-wrap w-full max-w-xl">
-                <div className="countdown-box">
+                  <div className="countdown-box">
                   <p className="text-sm tracking-[0.2em] text-muted uppercase">Counting down to</p>
                   <p className="mt-1 font-display text-xl font-semibold sm:text-2xl">{countdown.label}</p>
                   <p className="text-sm text-muted">
@@ -97,19 +101,30 @@ export default function Home() {
         <div className="content-grid mx-auto grid max-w-5xl gap-16 px-4 pb-24 sm:px-6 lg:grid-cols-[1fr_20rem] lg:gap-12">
           {/* Events */}
           <section id="events" className="min-w-0">
-            <SectionTitle>Upcoming events</SectionTitle>
-            {upcoming.length ? (
-              <ul className="flex flex-col gap-4">
-                {upcoming.map((e) => (
-                  <EventItem key={e.id} event={e} />
-                ))}
-              </ul>
-            ) : (
-              <p className="rounded-2xl border border-dashed border-line p-6 text-muted">
-                Nothing on the calendar right now — new events are announced here and on our socials first.
-              </p>
-            )}
-
+            <EventsTabs
+              pastCount={past.length}
+              upcoming={
+                upcoming.length ? (
+                  <ul className="flex flex-col gap-4">
+                    {upcoming.map((e) => (
+                      <EventItem key={e.id} event={e} />
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="rounded-2xl border border-dashed border-line p-6 text-muted">
+                    Nothing on the calendar right now — new events are announced here and on our socials first.
+                  </p>
+                )
+              }
+              past={
+                // Each past card is drawn in the theme of the quarter it happened in.
+                <ul className="flex flex-col gap-4">
+                  {past.map((e) => (
+                    <EventItem key={e.id} event={e} past />
+                  ))}
+                </ul>
+              }
+            />
           </section>
 
           <div className="flex flex-col gap-16">
@@ -150,36 +165,6 @@ export default function Home() {
             </section>
           </div>
         </div>
-        {/* Archive: each quarter's past events keep that quarter's look */}
-        {eras.length > 0 && (
-          <section id="archive" className="mx-auto max-w-5xl px-4 pb-24 sm:px-6">
-            <SectionTitle>Past events</SectionTitle>
-            <div className="flex flex-col gap-4">
-              {eras.map((era, i) => (
-                <details
-                  key={`${era.label}-${i}`}
-                  open={i === 0}
-                  data-theme={era.theme}
-                  style={themeStyle(era.theme)}
-                  className="era group"
-                >
-                  <summary className="era-summary">
-                    <span className="font-display text-lg font-semibold">{era.label}</span>
-                    <span className="text-sm text-muted">
-                      {era.events.length} event{era.events.length === 1 ? "" : "s"}
-                    </span>
-                    <IconChevronDown size={18} className="ml-auto transition group-open:rotate-180" />
-                  </summary>
-                  <ul className="mt-4 grid gap-4 md:grid-cols-2">
-                    {era.events.map((e) => (
-                      <EventItem key={e.id} event={e} past />
-                    ))}
-                  </ul>
-                </details>
-              ))}
-            </div>
-          </section>
-        )}
       </main>
 
       <footer className="border-t border-line">
