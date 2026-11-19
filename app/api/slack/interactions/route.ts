@@ -16,7 +16,7 @@ type Payload = {
   response_url?: string;
   user: { id: string; username?: string; name?: string };
   channel?: { id: string };
-  message?: { text?: string };
+  message?: { text?: string; files?: { id: string; mimetype?: string; size?: number }[] };
   actions?: { action_id: string; value?: string }[];
   view?: {
     callback_id: string;
@@ -25,7 +25,7 @@ type Payload = {
   };
 };
 
-const KINDS: ModalKind[] = ["event", "post", "link", "countdown", "announce", "theme"];
+const KINDS: ModalKind[] = ["event", "post", "link", "countdown", "announce", "theme", "logo"];
 
 export async function POST(request: Request) {
   const raw = await request.text();
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     after(async () => {
       try {
         const done = await result.apply();
-        await notify(meta.channel, user, `:white_check_mark: <@${user}> ${done}. Live on <${siteUrl()}|the site> in about a minute.`);
+        await notify(meta.channel, user, `:white_check_mark: <@${user}> ${done}. Live on <${siteUrl()}|the site> in a couple of minutes.`);
       } catch (err) {
         await notify(undefined, user, `:warning: Your website change didn't save: ${(err as Error).message}`);
       }
@@ -66,7 +66,8 @@ export async function POST(request: Request) {
 
   // ---- "Post to website" message shortcut ------------------------------------
   if (payload.type === "message_action" && payload.callback_id === "post_to_website") {
-    await openModal("post", payload.trigger_id!, { channel }, draftFromMessage(payload.message?.text ?? ""));
+    const { fileId, ...draft } = draftFromMessage(payload.message?.text ?? "", payload.message?.files);
+    await openModal("post", payload.trigger_id!, { channel, fileId }, draft);
     return empty();
   }
 

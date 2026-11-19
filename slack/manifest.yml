@@ -13,7 +13,7 @@ features:
     - command: /dai
       url: https://depaulai.org/api/slack/commands
       description: Update the website (events, posts, countdown, theme…)
-      usage_hint: "event | post | countdown | announce | link | theme | list"
+      usage_hint: "event | post | countdown | announce | link | theme | logo | list"
       should_escape: false
   shortcuts:
     - name: Post to website
@@ -25,6 +25,7 @@ oauth_config:
     bot:
       - commands
       - chat:write
+      - files:read
 settings:
   interactivity:
     is_enabled: true

@@ -12,12 +12,16 @@ import {
 } from "../content/schema";
 import { THEMES, THEME_IDS, type ThemeId } from "../themes";
 import { esc, siteUrl, slack } from "./api";
+import { fetchSlackImage, isUsableImage } from "./files";
 import {
   announceModal,
   countdownModal,
   eventModal,
+  checked,
   field,
+  fileField,
   linkModal,
+  logoModal,
   postModal,
   themeModal,
   type ModalKind,
@@ -58,6 +62,10 @@ async function buildModal(kind: ModalKind, meta: ModalMeta, prefill?: Record<str
       return announceModal(meta, (await readContent("site")).announcement);
     case "theme":
       return themeModal(meta, (await readContent("site")).theme);
+    case "logo": {
+      const site = await readContent("site");
+      return logoModal(meta, site.theme, site.logos);
+    }
   }
 }
 
@@ -76,10 +84,10 @@ export function handleSubmission(
   kind: ModalKind,
   values: StateValues,
   meta: ModalMeta,
-  user: string,
+  /** Attribution for the commit message, e.g. "(via Slack, @name)" */
+  by: string,
 ): Submission {
   const f = (id: string) => field(values, id);
-  const by = `(via Slack, ${user})`;
   const verb = meta.id ? "updated" : "added";
 
   switch (kind) {
@@ -98,9 +106,17 @@ export function handleSubmission(
       if (event.end && Date.parse(event.end) <= Date.parse(event.start)) {
         return { errors: { end: "End time must be after the start time." } };
       }
+      const image = imageChoice(values, meta);
+      if ("errors" in image) return image;
       return {
         apply: async () => {
-          await updateContent("events", (list) => upsert(list, event), `content: ${verb} event "${event.title}" ${by}`);
+          const upload = image.fileId ? await fetchSlackImage(image.fileId, event.title) : undefined;
+          await updateContent(
+            "events",
+            (list) => upsert(list, { ...event, image: resolveImage(list.find((e) => e.id === event.id)?.image, upload, image.remove) }),
+            `content: ${verb} event "${event.title}" ${by}`,
+            upload ? [upload] : [],
+          );
           return `${verb} event *${esc(event.title)}*`;
         },
       };
@@ -116,13 +132,20 @@ export function handleSubmission(
       });
       if ("errors" in parsed) return parsed;
       const post = parsed.data;
+      const image = imageChoice(values, meta);
+      if ("errors" in image) return image;
       return {
         apply: async () => {
+          const upload = image.fileId ? await fetchSlackImage(image.fileId, post.title) : undefined;
           await updateContent(
             "posts",
-            // Editing keeps the original publish date.
-            (list) => upsert(list, { ...post, date: list.find((p) => p.id === post.id)?.date ?? post.date }),
+            (list) => {
+              const prev = list.find((p) => p.id === post.id);
+              // Editing keeps the original publish date.
+              return upsert(list, { ...post, date: prev?.date ?? post.date, image: resolveImage(prev?.image, upload, image.remove) });
+            },
             `content: ${meta.id ? "updated" : "published"} update "${post.title}" ${by}`,
+            upload ? [upload] : [],
           );
           return `${meta.id ? "updated" : "published"} *${esc(post.title)}*`;
         },
@@ -181,12 +204,43 @@ export function handleSubmission(
       if (!theme || !THEME_IDS.includes(theme)) return { errors: { theme: "Pick a theme." } };
       return { apply: () => setTheme(theme, by) };
     }
+
+    case "logo": {
+      const theme = f("theme") as ThemeId | undefined;
+      if (!theme || !THEME_IDS.includes(theme)) return { errors: { theme: "Pick a theme." } };
+      const file = fileField(values, "image");
+      if (!file) return { errors: { image: "Upload an image." } };
+      if (!isUsableImage(file)) return { errors: { image: "Use a PNG, JPG, GIF or WebP under 8 MB." } };
+      return {
+        apply: async () => {
+          const upload = await fetchSlackImage(file.id, `logo-${theme}`);
+          await updateContent(
+            "site",
+            (site) => ({ ...site, logos: { ...site.logos, [theme]: upload.publicPath } }),
+            `content: new ${theme} logo ${by}`,
+            [upload],
+          );
+          return `uploaded a new *${THEMES[theme].label}* logo`;
+        },
+      };
+    }
   }
 }
 
 export async function setTheme(theme: ThemeId, by: string) {
   await updateContent("site", (site) => ({ ...site, theme }), `content: switch theme to ${theme} ${by}`);
   return `switched the site theme to *${THEMES[theme].label}*`;
+}
+
+export async function resetLogo(theme: ThemeId | undefined, by: string) {
+  let which: ThemeId = theme ?? "fall";
+  await updateContent("site", (site) => {
+    which = theme ?? site.theme;
+    const logos = { ...site.logos };
+    delete logos[which];
+    return { ...site, logos };
+  }, `content: reset ${theme ?? "current"} logo to default ${by}`);
+  return `reset the *${THEMES[which].label}* logo to the built-in one`;
 }
 
 export async function clearSiteField(fieldName: "countdown" | "announcement", by: string) {
@@ -310,6 +364,18 @@ export async function listBlocks() {
 
 // ---- helpers ------------------------------------------------------------------
 
+/** Which image the user picked in a form: a new upload, removal, or keep. */
+function imageChoice(values: StateValues, meta: ModalMeta): { fileId?: string; remove: boolean } | { errors: Record<string, string> } {
+  const file = fileField(values, "image");
+  if (file && !isUsableImage(file)) return { errors: { image: "Use a PNG, JPG, GIF or WebP under 8 MB." } };
+  return { fileId: file?.id ?? meta.fileId, remove: checked(values, "remove_image") };
+}
+
+function resolveImage(previous: string | undefined, upload: { publicPath: string } | undefined, remove: boolean) {
+  if (upload) return upload.publicPath;
+  return remove ? undefined : previous;
+}
+
 function upsert<T extends { id: string }>(list: T[], item: T): T[] {
   return list.some((x) => x.id === item.id) ? list.map((x) => (x.id === item.id ? item : x)) : [...list, item];
 }
@@ -326,7 +392,7 @@ function check<T>(schema: z.ZodType<T>, input: unknown): { data: T } | { errors:
 }
 
 /** Turns a Slack message (mrkdwn) into a draft update for the website. */
-export function draftFromMessage(text: string) {
+export function draftFromMessage(text: string, files: { id: string; mimetype?: string; size?: number }[] = []) {
   const urls: string[] = [];
   const clean = text
     .replace(/<(https?:\/\/[^|>]+)\|([^>]+)>/g, (_, url: string, label: string) => (urls.push(url), label))
@@ -343,5 +409,7 @@ export function draftFromMessage(text: string) {
     title,
     body: (first.length > 140 ? clean : rest.join("\n").trim()).slice(0, 2000) || undefined,
     link: urls[0],
+    /** First image attached to the message, if any. */
+    fileId: files.find(isUsableImage)?.id,
   };
 }

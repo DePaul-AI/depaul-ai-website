@@ -5,7 +5,8 @@ export async function slack<T = Record<string, unknown>>(
   method: string,
   body: Record<string, unknown>,
 ): Promise<T & { ok: boolean; error?: string }> {
-  const res = await fetch(`https://slack.com/api/${method}`, {
+  const api = process.env.SLACK_API_URL || "https://slack.com/api";
+  const res = await fetch(`${api}/${method}`, {
     method: "POST",
     cache: "no-store",
     headers: {

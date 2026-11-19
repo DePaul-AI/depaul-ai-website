@@ -35,48 +35,51 @@ export type Theme = {
 
 export const THEMES = {
   fall: {
+    // Newspaper cut-outs and handmade collage
     label: "Fall",
     season: "Fall Quarter",
-    scheme: "dark",
+    scheme: "light",
     tokens: {
-      bg: "#140e0b",
-      surface: "#1e1612",
-      line: "#3a2b22",
-      fg: "#fbf3ea",
-      muted: "#c2ab98",
-      accent: "#f29b38",
-      accentFg: "#1b0f05",
-      glow: ["#c2410c", "#9f1239", "#ca8a04"],
+      bg: "#ebe3d2",
+      surface: "#f8f4ea",
+      line: "#c8baa0",
+      fg: "#1c1814",
+      muted: "#5e5448",
+      accent: "#c2471b",
+      accentFg: "#fff8ef",
+      glow: ["#d4572a", "#e0a526", "#7a2e1a"],
     },
   },
   winter: {
+    // Liquid metal with a cyber edge: blue, silver, white
     label: "Winter",
     season: "Winter Quarter",
     scheme: "dark",
     tokens: {
-      bg: "#0a0f1a",
-      surface: "#111a2b",
-      line: "#23324d",
+      bg: "#05080f",
+      surface: "#0b1220",
+      line: "#22324a",
       fg: "#eef4ff",
-      muted: "#9fb0cc",
-      accent: "#8fd3ff",
-      accentFg: "#04121f",
-      glow: ["#1d4ed8", "#6d28d9", "#0e7490"],
+      muted: "#93a5c2",
+      accent: "#a9d1ff",
+      accentFg: "#04101f",
+      glow: ["#2563eb", "#94a3b8", "#0ea5e9"],
     },
   },
   spring: {
+    // Color explosion (a louder remix of the original pastel logo)
     label: "Spring",
     season: "Spring Quarter",
     scheme: "light",
     tokens: {
-      bg: "#fbf8f3",
+      bg: "#fff6ec",
       surface: "#ffffff",
-      line: "#eadfd6",
-      fg: "#2a1d24",
-      muted: "#75636c",
-      accent: "#c2417a",
+      line: "#f0d9c8",
+      fg: "#1d1030",
+      muted: "#6b5a73",
+      accent: "#ff2d87",
       accentFg: "#ffffff",
-      glow: ["#f9a8d4", "#86efac", "#fde68a"],
+      glow: ["#ff2d87", "#ffd400", "#00b8ff"],
     },
   },
   summer: {
@@ -113,6 +116,14 @@ export const THEMES = {
 
 export type ThemeId = keyof typeof THEMES;
 export const THEME_IDS = Object.keys(THEMES) as [ThemeId, ...ThemeId[]];
+
+/**
+ * The logo for a theme: the one uploaded with `/dai logo`, or the theme's
+ * built-in design in public/logos/<theme>.svg.
+ */
+export function logoFor(id: ThemeId, custom: Partial<Record<ThemeId, string>> = {}): string {
+  return custom[id] ?? `/logos/${id}.svg`;
+}
 
 /** CSS custom properties for a theme, ready to drop into a `style` prop. */
 export function themeStyle(id: ThemeId): Record<string, string> {

@@ -8,13 +8,15 @@ import type { Announcement, Countdown, Post, SiteEvent, SiteLink } from "../cont
  * input element using action_id "v".
  */
 
-export type ModalKind = "event" | "post" | "link" | "countdown" | "announce" | "theme";
+export type ModalKind = "event" | "post" | "link" | "countdown" | "announce" | "theme" | "logo";
 
 export type ModalMeta = {
   /** Channel the modal was opened from, so we can confirm there. */
   channel?: string;
   /** Set when editing an existing item. */
   id?: string;
+  /** An image already in Slack to attach (from the "Post to website" shortcut). */
+  fileId?: string;
 };
 
 type Block = Record<string, unknown>;
@@ -76,6 +78,37 @@ function dateTimeInput(id: string, label: string, opts: { initial?: string; opti
   };
 }
 
+const IMAGE_TYPES = ["png", "jpg", "jpeg", "gif", "webp"];
+
+function imageInput(id: string, label: string, opts: { optional?: boolean; hint?: string } = {}): Block {
+  return {
+    type: "input",
+    block_id: id,
+    optional: opts.optional ?? true,
+    label: plain(label),
+    ...(opts.hint ? { hint: plain(opts.hint) } : {}),
+    element: { type: "file_input", action_id: "v", filetypes: IMAGE_TYPES, max_files: 1 },
+  };
+}
+
+/** Image upload, plus a "remove" checkbox when the item already has one. */
+function imageBlocks(label: string, existing?: string, attached?: boolean): Block[] {
+  if (attached) {
+    return [{ type: "context", elements: [{ type: "mrkdwn", text: ":frame_with_picture: The image from the message will be included." }] }];
+  }
+  const blocks = [imageInput("image", label, { hint: existing ? "Leave empty to keep the current image." : "PNG, JPG, GIF or WebP, under 8 MB." })];
+  if (existing) {
+    blocks.push({
+      type: "input",
+      block_id: "remove_image",
+      optional: true,
+      label: plain("Current image"),
+      element: { type: "checkboxes", action_id: "v", options: [{ text: plain("Remove the current image"), value: "yes" }] },
+    });
+  }
+  return blocks;
+}
+
 function modal(kind: ModalKind, title: string, submit: string, blocks: Block[], meta: ModalMeta) {
   return {
     type: "modal",
@@ -90,7 +123,7 @@ function modal(kind: ModalKind, title: string, submit: string, blocks: Block[], 
 
 const liveNote: Block = {
   type: "context",
-  elements: [{ type: "mrkdwn", text: "Changes go live on the website about a minute after you save." }],
+  elements: [{ type: "mrkdwn", text: "Changes go live on the website a couple of minutes after you save." }],
 };
 
 export function eventModal(meta: ModalMeta, e?: SiteEvent) {
@@ -101,6 +134,7 @@ export function eventModal(meta: ModalMeta, e?: SiteEvent) {
     textInput("location", "Where", { initial: e?.location, optional: true, max: 120, placeholder: "CDM 222, Loop Campus" }),
     textInput("description", "Description", { initial: e?.description, optional: true, multiline: true, max: 1000 }),
     urlInput("link", "RSVP or details link", { initial: e?.link }),
+    ...imageBlocks("Flyer or photo", e?.image),
     liveNote,
   ], meta);
 }
@@ -110,6 +144,7 @@ export function postModal(meta: ModalMeta, p?: Partial<Post>) {
     textInput("title", "Headline", { initial: p?.title, max: 140, placeholder: "Applications for winter board are open" }),
     textInput("body", "Details", { initial: p?.body, optional: true, multiline: true, max: 2000 }),
     urlInput("link", "Link", { initial: p?.link, hint: "Instagram post, article, form, recording…" }),
+    ...imageBlocks("Image", p?.image, !!meta.fileId),
     liveNote,
   ], meta);
 }
@@ -171,13 +206,48 @@ export function themeModal(meta: ModalMeta, current: ThemeId) {
   ], meta);
 }
 
+export function logoModal(meta: ModalMeta, current: ThemeId, custom: Partial<Record<ThemeId, string>>) {
+  const option = (id: ThemeId) => ({
+    text: plain(`${THEMES[id].label}${custom[id] ? " (custom logo)" : ""}`),
+    value: id,
+  });
+  return modal("logo", "Seasonal logo", "Upload logo", [
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: "Each theme has its own logo, so switching themes switches the logo too. Upload a square image (at least 512×512, PNG with a transparent or filled background). To go back to a theme's built-in logo, use `/dai logo reset`.",
+      },
+    },
+    {
+      type: "input",
+      block_id: "theme",
+      label: plain("For which theme"),
+      element: { type: "static_select", action_id: "v", options: THEME_IDS.map(option), initial_option: option(current) },
+    },
+    imageInput("image", "Logo image", { optional: false }),
+    liveNote,
+  ], meta);
+}
+
 // ---- reading submitted values ----------------------------------------------
 
 type StateValues = Record<string, Record<string, {
   value?: string | null;
   selected_date_time?: number | null;
   selected_option?: { value: string } | null;
+  selected_options?: { value: string }[] | null;
+  files?: { id: string; mimetype?: string; size?: number }[] | null;
 }>>;
+
+/** The uploaded file in a file_input, if any. */
+export function fileField(values: StateValues, id: string) {
+  return values[id]?.v?.files?.[0];
+}
+
+export function checked(values: StateValues, id: string) {
+  return (values[id]?.v?.selected_options?.length ?? 0) > 0;
+}
 
 export function field(values: StateValues, id: string): string | undefined {
   const v = values[id]?.v;
