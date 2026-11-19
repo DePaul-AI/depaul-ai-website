@@ -33,5 +33,13 @@
     "end": "2026-05-22T00:00:00.000Z",
     "location": "DePaul Center 8014",
     "description": "DePaul AI Tinkerings is here and for our first session we're running AI locally, right on your own laptop.\nNo big tech servers, no data in the cloud, no energy wasted on someone else's infrastructure.\nJust you, your machine, and full control over what you're running."
+  },
+  {
+    "id": "finale-ai-the-environment-innovation-at-kxj6",
+    "title": "Finale: AI & The Environment, Innovation at What Cost",
+    "start": "2026-06-03T21:30:00.000Z",
+    "end": "2026-06-04T00:00:00.000Z",
+    "location": "Vinny Circle",
+    "description": "Join DePaul AI for an outdoor conversation on AI and sustainability!!\nWe’ll be discussing the environmental impact of AI through interactive activities, open discussion, and picnic-style hangouts at Vinny Circle."
   }
 ]
