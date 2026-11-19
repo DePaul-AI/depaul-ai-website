@@ -1,7 +1,7 @@
-import { IconArrowUpRight, IconSpeakerphone } from "@tabler/icons-react";
-import { activeCountdown, site, sortedPosts, splitEvents } from "@/lib/content";
+import { IconArrowUpRight, IconChevronDown, IconSpeakerphone } from "@tabler/icons-react";
+import { activeCountdown, archive, site, sortedPosts, splitEvents } from "@/lib/content";
 import { currentYear, longDate, time } from "@/lib/format";
-import { THEMES } from "@/lib/themes";
+import { THEMES, themeStyle } from "@/lib/themes";
 import Countdown from "./components/Countdown";
 import Logo from "./components/Logo";
 import Decor from "./themes/Decor";
@@ -15,7 +15,8 @@ import Socials from "./components/Socials";
 export const revalidate = 900;
 
 export default function Home() {
-  const { upcoming, past } = splitEvents();
+  const { upcoming } = splitEvents();
+  const eras = archive();
   const countdown = activeCountdown();
   const posts = sortedPosts().slice(0, 10);
   const theme = THEMES[site.theme];
@@ -109,18 +110,6 @@ export default function Home() {
               </p>
             )}
 
-            {past.length > 0 && (
-              <details className="group mt-8">
-                <summary className="cursor-pointer text-sm text-muted hover:text-fg">
-                  Past events ({past.length})
-                </summary>
-                <ul className="mt-2 divide-y divide-line">
-                  {past.map((e) => (
-                    <EventItem key={e.id} event={e} past />
-                  ))}
-                </ul>
-              </details>
-            )}
           </section>
 
           <div className="flex flex-col gap-16">
@@ -161,6 +150,36 @@ export default function Home() {
             </section>
           </div>
         </div>
+        {/* Archive: each quarter's past events keep that quarter's look */}
+        {eras.length > 0 && (
+          <section id="archive" className="mx-auto max-w-5xl px-4 pb-24 sm:px-6">
+            <SectionTitle>Past events</SectionTitle>
+            <div className="flex flex-col gap-4">
+              {eras.map((era, i) => (
+                <details
+                  key={`${era.label}-${i}`}
+                  open={i === 0}
+                  data-theme={era.theme}
+                  style={themeStyle(era.theme)}
+                  className="era group"
+                >
+                  <summary className="era-summary">
+                    <span className="font-display text-lg font-semibold">{era.label}</span>
+                    <span className="text-sm text-muted">
+                      {era.events.length} event{era.events.length === 1 ? "" : "s"}
+                    </span>
+                    <IconChevronDown size={18} className="ml-auto transition group-open:rotate-180" />
+                  </summary>
+                  <ul className="mt-4 grid gap-4 md:grid-cols-2">
+                    {era.events.map((e) => (
+                      <EventItem key={e.id} event={e} past />
+                    ))}
+                  </ul>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
 
       <footer className="border-t border-line">

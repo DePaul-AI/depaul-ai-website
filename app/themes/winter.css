@@ -3,234 +3,259 @@
  * Chrome type, morphing mercury blobs, a fading grid, HUD readouts and
  * scanlines, in blue, silver and white.
  */
+/* Scoped so a nested [data-theme] (e.g. an archived event from another quarter)
+   only ever gets its own theme's styles. */
+@scope ([data-theme="winter"]) to ([data-theme]) {
+  :scope {
+    --font-heading: var(--font-unbounded), ui-sans-serif, sans-serif;
+    --chrome: linear-gradient(180deg, #ffffff 0%, #dbe5f2 30%, #7d8ca6 46%, #26324a 50%, #eaf2ff 55%, #9cc4f5 78%, #ffffff 100%);
+    --edge: rgb(169 209 255 / 0.22);
+  }
 
-[data-theme="winter"] {
-  --font-heading: var(--font-unbounded), ui-sans-serif, sans-serif;
-  --chrome: linear-gradient(180deg, #ffffff 0%, #dbe5f2 30%, #7d8ca6 46%, #26324a 50%, #eaf2ff 55%, #9cc4f5 78%, #ffffff 100%);
-  --edge: rgb(169 209 255 / 0.22);
+  /* Faint scanlines across the whole page */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    background: repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.025) 0 1px, transparent 1px 3px);
+  }
+
+  .banner {
+    background: var(--chrome);
+    background-size: 100% 300%;
+    background-position: 0 30%;
+    color: #04101f;
+    font-family: var(--font-geist-mono), monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+  }
+
+  .site-header {
+    background: rgb(5 8 15 / 0.7);
+    border-bottom-color: var(--edge);
+  }
+
+  .hero-eyebrow {
+    border-radius: 2px;
+    border-color: var(--edge);
+    color: var(--accent);
+    font-family: var(--font-geist-mono), monospace;
+  }
+  .hero-eyebrow::before { content: "▸ "; }
+
+  /* ---- chrome title -------------------------------------------------------- */
+  .hero-title {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-size: clamp(2.75rem, 9vw, 5.75rem);
+    line-height: 1.02;
+    background: var(--chrome);
+    background-size: 100% 220%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 22px rgb(106 168 255 / 0.35));
+    animation: winter-sheen 9s ease-in-out infinite alternate;
+  }
+
+  .hero-logo {
+    border-radius: 28%;
+    box-shadow: 0 0 0 1px var(--edge), 0 0 60px -10px rgb(59 130 246 / 0.6);
+    animation: winter-float 7s ease-in-out infinite alternate;
+  }
+
+  /* ---- HUD panels ----------------------------------------------------------- */
+  .countdown-box,
+  .card {
+    position: relative;
+    border-radius: 6px;
+    border-color: var(--edge);
+    background: linear-gradient(180deg, rgb(169 209 255 / 0.06), rgb(169 209 255 / 0.015)), rgb(11 18 32 / 0.6);
+    backdrop-filter: blur(12px);
+  }
+  .countdown-box::before,
+  li.card:not(.link-card)::before,
+  .countdown-box::after,
+  li.card:not(.link-card)::after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--accent);
+  }
+  .countdown-box::before,
+  li.card:not(.link-card)::before {
+    top: -1px;
+    left: -1px;
+    border-right: 0;
+    border-bottom: 0;
+  }
+  .countdown-box::after,
+  li.card:not(.link-card)::after {
+    right: -1px;
+    bottom: -1px;
+    border-left: 0;
+    border-top: 0;
+  }
+
+  .countdown-digit {
+    font-family: var(--font-unbounded), sans-serif;
+    font-weight: 700;
+    background: var(--chrome);
+    background-size: 100% 160%;
+    background-position: 0 40%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .countdown-label { font-family: var(--font-geist-mono), monospace; }
+
+  .section-title {
+    color: var(--accent);
+    font-family: var(--font-geist-mono), monospace;
+    letter-spacing: 0.12em;
+  }
+  .section-title::before {
+    content: "// ";
+    color: var(--muted);
+  }
+
+  .date-tile {
+    border-radius: 4px;
+    border-color: var(--edge);
+    font-family: var(--font-geist-mono), monospace;
+  }
+  .date-tile > :last-child {
+    font-family: var(--font-unbounded), sans-serif;
+    background: var(--chrome);
+    background-size: 100% 160%;
+    background-position: 0 40%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .media {
+    border-radius: 4px;
+    border-color: var(--edge);
+  }
+
+  .link-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 24px -6px rgb(106 168 255 / 0.6);
+  }
+
+  .btn-primary {
+    border-radius: 4px;
+    background: var(--chrome);
+    background-size: 100% 300%;
+    background-position: 0 25%;
+    color: #04101f;
+    font-family: var(--font-geist-mono), monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    box-shadow: 0 0 20px -4px rgb(106 168 255 / 0.55);
+    transition: background-position 0.4s;
+  }
+  .btn-primary:hover { opacity: 1; background-position: 0 65%; }
+  .btn-ghost {
+    border-radius: 4px;
+    border-color: var(--edge);
+    font-family: var(--font-geist-mono), monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .btn-ghost:hover { border-color: var(--accent); }
+
+  footer { border-color: var(--edge); }
+
+  /* ---- hero decor ------------------------------------------------------------ */
+  .winter-grid {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(rgb(143 180 230 / 0.09) 1px, transparent 1px) 0 0 / 44px 44px,
+      linear-gradient(90deg, rgb(143 180 230 / 0.09) 1px, transparent 1px) 0 0 / 44px 44px;
+    mask-image: radial-gradient(ellipse 80% 70% at 60% 40%, black 20%, transparent 75%);
+  }
+
+  /* Mercury: a metallic gradient on a shape whose corners keep reshaping */
+  .winter-blob {
+    position: absolute;
+    background:
+      radial-gradient(circle at 30% 25%, #ffffff 0%, transparent 22%),
+      radial-gradient(circle at 70% 80%, rgb(96 165 250 / 0.9) 0%, transparent 45%),
+      conic-gradient(from 210deg, #e8f0fb, #6b7a93, #1b2538, #c9d8ec, #ffffff, #7aa7e0, #e8f0fb);
+    border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
+    box-shadow:
+      inset -18px -22px 40px rgb(5 8 15 / 0.55),
+      inset 14px 16px 30px rgb(255 255 255 / 0.5),
+      0 0 80px -10px rgb(59 130 246 / 0.55);
+    opacity: 0.85;
+    animation: winter-morph 16s ease-in-out infinite alternate;
+  }
+  @media (max-width: 639px) {
+    .winter-blob { opacity: 0.4; }
+  }
+  .winter-blob-2 { animation-duration: 21s; animation-direction: alternate-reverse; opacity: 0.6; }
+  .winter-blob-3 { animation-duration: 11s; opacity: 0.9; }
+
+  .winter-hud {
+    position: absolute;
+    color: var(--accent);
+    font-family: var(--font-geist-mono), monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    line-height: 1.6;
+    opacity: 0.7;
+  }
+  .winter-scan {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent, rgb(169 209 255 / 0.08) 50%, transparent);
+    height: 30%;
+    animation: winter-scan 7s linear infinite;
+  }
+
+  /* Archived winter quarter: a HUD panel over the grid */
+  :scope.era {
+    border-radius: 6px;
+    border-color: var(--edge);
+    background:
+      linear-gradient(rgb(143 180 230 / 0.07) 1px, transparent 1px) 0 0 / 32px 32px,
+      linear-gradient(90deg, rgb(143 180 230 / 0.07) 1px, transparent 1px) 0 0 / 32px 32px,
+      radial-gradient(80% 60% at 80% 0%, rgb(37 99 235 / 0.25), transparent 70%),
+      var(--bg);
+  }
+  .era-summary > :first-child {
+    background: var(--chrome);
+    background-size: 100% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 }
 
-/* Faint scanlines across the whole page */
-[data-theme="winter"] body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  pointer-events: none;
-  background: repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.025) 0 1px, transparent 1px 3px);
-}
-
-[data-theme="winter"] .banner {
-  background: var(--chrome);
-  background-size: 100% 300%;
-  background-position: 0 30%;
-  color: #04101f;
-  font-family: var(--font-geist-mono), monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.75rem;
-}
-
-[data-theme="winter"] .site-header {
-  background: rgb(5 8 15 / 0.7);
-  border-bottom-color: var(--edge);
-}
-
-[data-theme="winter"] .hero-eyebrow {
-  border-radius: 2px;
-  border-color: var(--edge);
-  color: var(--accent);
-  font-family: var(--font-geist-mono), monospace;
-}
-[data-theme="winter"] .hero-eyebrow::before { content: "▸ "; }
-
-/* ---- chrome title -------------------------------------------------------- */
-[data-theme="winter"] .hero-title {
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  font-size: clamp(2.75rem, 9vw, 5.75rem);
-  line-height: 1.02;
-  background: var(--chrome);
-  background-size: 100% 220%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 0 22px rgb(106 168 255 / 0.35));
-  animation: winter-sheen 9s ease-in-out infinite alternate;
-}
 @keyframes winter-sheen {
   from { background-position: 0 0%; }
   to { background-position: 0 100%; }
 }
 
-[data-theme="winter"] .hero-logo {
-  border-radius: 28%;
-  box-shadow: 0 0 0 1px var(--edge), 0 0 60px -10px rgb(59 130 246 / 0.6);
-  animation: winter-float 7s ease-in-out infinite alternate;
-}
 @keyframes winter-float {
   to { translate: 0 -10px; }
 }
 
-/* ---- HUD panels ----------------------------------------------------------- */
-[data-theme="winter"] .countdown-box,
-[data-theme="winter"] .card {
-  position: relative;
-  border-radius: 6px;
-  border-color: var(--edge);
-  background: linear-gradient(180deg, rgb(169 209 255 / 0.06), rgb(169 209 255 / 0.015)), rgb(11 18 32 / 0.6);
-  backdrop-filter: blur(12px);
-}
-[data-theme="winter"] .countdown-box::before,
-[data-theme="winter"] li.card:not(.link-card)::before,
-[data-theme="winter"] .countdown-box::after,
-[data-theme="winter"] li.card:not(.link-card)::after {
-  content: "";
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border: 2px solid var(--accent);
-}
-[data-theme="winter"] .countdown-box::before,
-[data-theme="winter"] li.card:not(.link-card)::before {
-  top: -1px;
-  left: -1px;
-  border-right: 0;
-  border-bottom: 0;
-}
-[data-theme="winter"] .countdown-box::after,
-[data-theme="winter"] li.card:not(.link-card)::after {
-  right: -1px;
-  bottom: -1px;
-  border-left: 0;
-  border-top: 0;
-}
-
-[data-theme="winter"] .countdown-digit {
-  font-family: var(--font-unbounded), sans-serif;
-  font-weight: 700;
-  background: var(--chrome);
-  background-size: 100% 160%;
-  background-position: 0 40%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-[data-theme="winter"] .countdown-label { font-family: var(--font-geist-mono), monospace; }
-
-[data-theme="winter"] .section-title {
-  color: var(--accent);
-  font-family: var(--font-geist-mono), monospace;
-  letter-spacing: 0.12em;
-}
-[data-theme="winter"] .section-title::before {
-  content: "// ";
-  color: var(--muted);
-}
-
-[data-theme="winter"] .date-tile {
-  border-radius: 4px;
-  border-color: var(--edge);
-  font-family: var(--font-geist-mono), monospace;
-}
-[data-theme="winter"] .date-tile > :last-child {
-  font-family: var(--font-unbounded), sans-serif;
-  background: var(--chrome);
-  background-size: 100% 160%;
-  background-position: 0 40%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-[data-theme="winter"] .media {
-  border-radius: 4px;
-  border-color: var(--edge);
-}
-
-[data-theme="winter"] .link-card:hover {
-  border-color: var(--accent);
-  box-shadow: 0 0 24px -6px rgb(106 168 255 / 0.6);
-}
-
-[data-theme="winter"] .btn-primary {
-  border-radius: 4px;
-  background: var(--chrome);
-  background-size: 100% 300%;
-  background-position: 0 25%;
-  color: #04101f;
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  box-shadow: 0 0 20px -4px rgb(106 168 255 / 0.55);
-  transition: background-position 0.4s;
-}
-[data-theme="winter"] .btn-primary:hover { opacity: 1; background-position: 0 65%; }
-[data-theme="winter"] .btn-ghost {
-  border-radius: 4px;
-  border-color: var(--edge);
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-[data-theme="winter"] .btn-ghost:hover { border-color: var(--accent); }
-
-[data-theme="winter"] footer { border-color: var(--edge); }
-
-/* ---- hero decor ------------------------------------------------------------ */
-.winter-grid {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(rgb(143 180 230 / 0.09) 1px, transparent 1px) 0 0 / 44px 44px,
-    linear-gradient(90deg, rgb(143 180 230 / 0.09) 1px, transparent 1px) 0 0 / 44px 44px;
-  mask-image: radial-gradient(ellipse 80% 70% at 60% 40%, black 20%, transparent 75%);
-}
-
-/* Mercury: a metallic gradient on a shape whose corners keep reshaping */
-.winter-blob {
-  position: absolute;
-  background:
-    radial-gradient(circle at 30% 25%, #ffffff 0%, transparent 22%),
-    radial-gradient(circle at 70% 80%, rgb(96 165 250 / 0.9) 0%, transparent 45%),
-    conic-gradient(from 210deg, #e8f0fb, #6b7a93, #1b2538, #c9d8ec, #ffffff, #7aa7e0, #e8f0fb);
-  border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
-  box-shadow:
-    inset -18px -22px 40px rgb(5 8 15 / 0.55),
-    inset 14px 16px 30px rgb(255 255 255 / 0.5),
-    0 0 80px -10px rgb(59 130 246 / 0.55);
-  opacity: 0.85;
-  animation: winter-morph 16s ease-in-out infinite alternate;
-}
-@media (max-width: 639px) {
-  .winter-blob { opacity: 0.4; }
-}
-.winter-blob-2 { animation-duration: 21s; animation-direction: alternate-reverse; opacity: 0.6; }
-.winter-blob-3 { animation-duration: 11s; opacity: 0.9; }
 @keyframes winter-morph {
   0% { border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%; rotate: 0deg; }
   50% { border-radius: 63% 37% 38% 62% / 55% 61% 39% 45%; }
   100% { border-radius: 36% 64% 52% 48% / 62% 36% 64% 38%; rotate: 40deg; }
 }
 
-.winter-hud {
-  position: absolute;
-  color: var(--accent);
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.14em;
-  line-height: 1.6;
-  opacity: 0.7;
-}
-.winter-scan {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent, rgb(169 209 255 / 0.08) 50%, transparent);
-  height: 30%;
-  animation: winter-scan 7s linear infinite;
-}
 @keyframes winter-scan {
   from { translate: 0 -100%; }
   to { translate: 0 400%; }

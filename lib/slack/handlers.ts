@@ -11,6 +11,7 @@ import {
   type ContentKey,
 } from "../content/schema";
 import { THEMES, THEME_IDS, type ThemeId } from "../themes";
+import { recordThemeSwitch } from "../eras";
 import { esc, siteUrl, slack } from "./api";
 import { fetchSlackImage, isUsableImage } from "./files";
 import {
@@ -228,7 +229,12 @@ export function handleSubmission(
 }
 
 export async function setTheme(theme: ThemeId, by: string) {
-  await updateContent("site", (site) => ({ ...site, theme }), `content: switch theme to ${theme} ${by}`);
+  await updateContent(
+    "site",
+    // Also record the era so past events keep this quarter's look.
+    (site) => ({ ...site, theme, eras: recordThemeSwitch(site.eras, theme) }),
+    `content: switch theme to ${theme} ${by}`,
+  );
   return `switched the site theme to *${THEMES[theme].label}*`;
 }
 

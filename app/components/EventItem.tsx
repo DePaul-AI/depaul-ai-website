@@ -1,32 +1,17 @@
 import Image from "next/image";
 import { IconCalendarPlus, IconMapPin, IconArrowUpRight } from "@tabler/icons-react";
 import type { SiteEvent } from "@/lib/content";
-import { dayOfMonth, googleCalendarUrl, monthShort, timeRange, weekday, longDate } from "@/lib/format";
+import { dayOfMonth, googleCalendarUrl, monthShort, timeRange, weekday, year } from "@/lib/format";
 
+/** An event card. `past` drops the calendar button and shows the year, for the archive. */
 export default function EventItem({ event, past = false }: { event: SiteEvent; past?: boolean }) {
-  if (past) {
-    return (
-      <li className="flex flex-col gap-0.5 py-3 sm:flex-row sm:items-baseline sm:gap-4">
-        <span className="w-36 shrink-0 text-sm text-muted">{longDate(event.start)}</span>
-        <span className="text-fg">
-          {event.link ? (
-            <a href={event.link} target="_blank" rel="noopener noreferrer" className="hover:text-accent">
-              {event.title}
-            </a>
-          ) : (
-            event.title
-          )}
-        </span>
-      </li>
-    );
-  }
-
   return (
     <li className="card flex flex-col gap-4 p-4 sm:flex-row sm:gap-6 sm:p-6">
       <div className="flex min-w-0 flex-1 gap-4 sm:gap-6">
         <div className="date-tile">
           <span className="text-xs font-medium tracking-widest text-accent uppercase">{monthShort(event.start)}</span>
           <span className="text-2xl font-semibold tabular-nums sm:text-3xl">{dayOfMonth(event.start)}</span>
+          {past && <span className="text-[0.65rem] tabular-nums opacity-75">{year(event.start)}</span>}
         </div>
 
         <div className="min-w-0 flex-1">
@@ -40,17 +25,21 @@ export default function EventItem({ event, past = false }: { event: SiteEvent; p
               {event.location}
             </p>
           )}
-          {event.description && <p className="mt-3 leading-relaxed whitespace-pre-line">{event.description}</p>}
+          {event.description && (
+            <p className={`mt-3 leading-relaxed whitespace-pre-line ${past ? "line-clamp-4" : ""}`}>{event.description}</p>
+          )}
 
           <div className="mt-4 flex flex-wrap gap-2">
             {event.link && (
-              <a href={event.link} target="_blank" rel="noopener noreferrer" className="btn-primary">
-                RSVP / details <IconArrowUpRight size={15} />
+              <a href={event.link} target="_blank" rel="noopener noreferrer" className={past ? "btn-ghost" : "btn-primary"}>
+                {past ? "Recap / details" : "RSVP / details"} <IconArrowUpRight size={15} />
               </a>
             )}
-            <a href={googleCalendarUrl(event)} target="_blank" rel="noopener noreferrer" className="btn-ghost">
-              <IconCalendarPlus size={15} /> Add to calendar
-            </a>
+            {!past && (
+              <a href={googleCalendarUrl(event)} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+                <IconCalendarPlus size={15} /> Add to calendar
+              </a>
+            )}
           </div>
         </div>
       </div>

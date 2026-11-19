@@ -91,6 +91,28 @@ body {
   @apply inline-flex items-center gap-1 rounded-full border border-line px-4 py-1.5 text-sm text-muted transition hover:text-fg;
 }
 
+/* An archived quarter: a panel in that quarter's own theme (see app/themes/*.css).
+   :where() keeps these defaults at zero specificity so themes always override them. */
+:where(.era) {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1.5rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+}
+@media (min-width: 640px) {
+  :where(.era) { padding: 1.5rem; }
+}
+:where(.era-summary) {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  cursor: pointer;
+  list-style: none;
+}
+.era-summary::-webkit-details-marker { display: none; }
+
 /* Default backdrop: a soft drifting color field (used by summer/midnight). */
 .glow {
   position: absolute;

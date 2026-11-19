@@ -35,6 +35,15 @@ export const announcementSchema = z.object({
   link: url.optional(),
 });
 
+/** A stretch of time the site wore one theme, e.g. Fall 2026. */
+export const eraSchema = z.object({
+  theme: z.enum(THEME_IDS),
+  label: z.string().min(1).max(40),
+  start: isoDate,
+  /** Missing = still going. */
+  end: isoDate.optional(),
+});
+
 export const siteSchema = z.object({
   theme: z.enum(THEME_IDS),
   /**
@@ -42,6 +51,11 @@ export const siteSchema = z.object({
    * their designed default in public/logos/<theme>.svg.
    */
   logos: z.partialRecord(z.enum(THEME_IDS), upload).default({}),
+  /**
+   * Which theme was live when, oldest first. Past events are shown in the
+   * look of their era. `/dai theme` appends to this automatically.
+   */
+  eras: z.array(eraSchema).default([]),
   hero: z.object({
     title: z.string().min(1),
     tagline: z.string().min(1),
@@ -84,6 +98,7 @@ export const eventsSchema = z.array(eventSchema);
 export const postsSchema = z.array(postSchema);
 
 export type Site = z.infer<typeof siteSchema>;
+export type Era = z.infer<typeof eraSchema>;
 export type SiteLink = z.infer<typeof linkSchema>;
 export type Countdown = z.infer<typeof countdownSchema>;
 export type Announcement = z.infer<typeof announcementSchema>;

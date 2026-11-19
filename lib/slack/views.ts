@@ -129,7 +129,7 @@ const liveNote: Block = {
 export function eventModal(meta: ModalMeta, e?: SiteEvent) {
   return modal("event", e ? "Edit event" : "Add event", e ? "Save" : "Add event", [
     textInput("title", "Event name", { initial: e?.title, max: 120, placeholder: "Intro to LLMs workshop" }),
-    dateTimeInput("start", "Starts", { initial: e?.start, hint: "Uses your Slack time zone." }),
+    dateTimeInput("start", "Starts", { initial: e?.start, hint: "Uses your Slack time zone. Past dates work too: they go in the archive, styled like that quarter." }),
     dateTimeInput("end", "Ends", { initial: e?.end, optional: true }),
     textInput("location", "Where", { initial: e?.location, optional: true, max: 120, placeholder: "CDM 222, Loop Campus" }),
     textInput("description", "Description", { initial: e?.description, optional: true, multiline: true, max: 1000 }),
