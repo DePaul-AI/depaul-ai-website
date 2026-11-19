@@ -1,19 +1,28 @@
 import "server-only";
 
-/** Minimal Slack Web API client — we only need a handful of methods. */
+/**
+ * Minimal Slack Web API client — we only need a handful of methods.
+ * Some read methods (like files.info) reject JSON bodies with
+ * `invalid_arguments`, so those are sent form-encoded instead.
+ */
+const FORM_METHODS = new Set(["files.info"]);
+
 export async function slack<T = Record<string, unknown>>(
   method: string,
   body: Record<string, unknown>,
 ): Promise<T & { ok: boolean; error?: string }> {
   const api = process.env.SLACK_API_URL || "https://slack.com/api";
+  const form = FORM_METHODS.has(method);
   const res = await fetch(`${api}/${method}`, {
     method: "POST",
     cache: "no-store",
     headers: {
       Authorization: `Bearer ${process.env.SLACK_BOT_TOKEN}`,
-      "Content-Type": "application/json; charset=utf-8",
+      "Content-Type": form ? "application/x-www-form-urlencoded" : "application/json; charset=utf-8",
     },
-    body: JSON.stringify(body),
+    body: form
+      ? new URLSearchParams(Object.entries(body).map(([k, v]) => [k, String(v)])).toString()
+      : JSON.stringify(body),
   });
   const data = await res.json();
   if (!data.ok) console.error(`Slack ${method} failed:`, data.error, data.response_metadata);
