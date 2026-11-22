@@ -102,8 +102,8 @@ function BurstPaths({ b }: { b: Burst }) {
 }
 
 /**
- * The site title. data-text feeds the stretched serif (::before) and the
- * glitch slices (::after) in styles.css, so they always match the title.
+ * The site title. data-text feeds the glitch slices (::after) in styles.css,
+ * so they always match the title.
  */
 export function Title({ title }: { title: string }) {
   return (
