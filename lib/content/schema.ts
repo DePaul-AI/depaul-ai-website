@@ -10,8 +10,12 @@ import { THEME_IDS } from "../../themes";
 
 const url = z.url({ protocol: /^https?$/, message: "Must be a full http(s) URL" });
 const isoDate = z.iso.datetime({ offset: true, message: "Must be an ISO date-time" });
-/** An image uploaded through Slack, stored in public/uploads. */
-export const UPLOAD_PATTERN = /^\/uploads\/[a-z0-9-]+\.(png|jpe?g|gif|webp)$/;
+/**
+ * An image uploaded through Slack, stored in git at public/uploads/<file>.
+ * Newer uploads are served at /media/<file> (no redeploy needed); older ones
+ * at /uploads/<file>, from the deployed files.
+ */
+export const UPLOAD_PATTERN = /^\/(uploads|media)\/[a-z0-9-]+\.(png|jpe?g|gif|webp)$/;
 const upload = z.string().regex(UPLOAD_PATTERN, "Must be an uploaded image path");
 
 const id = z

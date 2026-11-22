@@ -44,19 +44,25 @@ pick a past date in `/dai event`.
 ## How it works
 
 ```
-Slack /dai ──► /api/slack/* (this Next.js app) ──► commits to content/*.json on GitHub
-                                                            │
-                                     hosting redeploys on push ◄┘
+Slack /dai ──► /api/slack/* ──► commits to content/*.json on GitHub ──► refreshes the site's cache
+                                                                         (live in ~1 second)
+Visitor ──► page ──► content from GitHub, cached ◄── also refreshed by a GitHub webhook
+                                                     and every 5 minutes
 ```
 
 - All editable content lives in [`content/`](content): `site.json` (theme, logos, hero,
   countdown, banner, links), `events.json`, and `posts.json`. You can also edit these
   directly on GitHub.
+- **Content is read live, not built in.** The site reads the latest content from GitHub
+  ([`lib/content/live.ts`](lib/content/live.ts)) and caches it. After every Slack change the bot
+  clears that cache, so the very next visitor sees the update. No redeploy is involved.
+  Deploys happen only when code changes (see [`railway.json`](railway.json) watch paths).
 - Images uploaded in Slack are saved to `public/uploads/` in the same commit as the change
-  that uses them.
-- Every file is checked against [`lib/content/schema.ts`](lib/content/schema.ts) both by the
-  bot before it commits and by the build. A bad edit fails the build, and the last good
-  version stays live.
+  that uses them, and served at `/media/<file>` ([`app/media/[file]/route.ts`](app/media/%5Bfile%5D/route.ts)),
+  fetched from GitHub on first view and cached after that.
+- Every file is checked against [`lib/content/schema.ts`](lib/content/schema.ts) by the bot
+  before it commits, when the site loads it, and by the build. If a bad edit or a GitHub outage
+  ever gets in the way, the site keeps serving the last good version.
 - Every change is a git commit like `content: added event "…" (via Slack, @name)`, so
   there's a full history and anything can be reverted.
 - Times are shown in Chicago time.
@@ -121,6 +127,15 @@ can also be replaced from Slack with `/dai logo`. The favicon follows the active
   URL in a browser should show *405 Method Not Allowed*, which means it's live.
 - **Serverless vs. server**: Railway runs one long-lived Node server, so there are no cold
   starts and the Slack bot's background work (`after()`) isn't subject to function time limits.
+  The bot refreshes the cache of the server it runs on, so keep the service at **one replica**.
+- **Only code changes deploy**: [`railway.json`](railway.json) lists the folders that trigger a
+  deploy (`watchPatterns`). Content commits from the bot don't match, so they're skipped. If you
+  add a new top-level code folder or config file, add it there too. Check it took effect under
+  the service's **Settings → Build → Watch Paths**.
+- **Optional GitHub webhook** for edits made directly on GitHub: repo **Settings → Webhooks →
+  Add webhook**, payload URL `https://depaulai.org/api/revalidate`, content type
+  `application/json`, a secret of your choice (also set as `GITHUB_WEBHOOK_SECRET` on Railway),
+  "Just the push event". Without it, direct GitHub edits still show up within 5 minutes.
 
 
 ## Development

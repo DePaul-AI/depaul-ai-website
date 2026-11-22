@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
-import { site } from "@/lib/content";
+import { getContent } from "@/lib/content/live";
 import { THEMES } from "@/themes";
 
-export default function manifest(): MetadataRoute.Manifest {
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  const { site } = await getContent();
   const bg = THEMES[site.theme].background;
   return {
     name: "DePaul AI",

@@ -123,7 +123,7 @@ function modal(kind: ModalKind, title: string, submit: string, blocks: Block[], 
 
 const liveNote: Block = {
   type: "context",
-  elements: [{ type: "mrkdwn", text: "Changes go live on the website a couple of minutes after you save." }],
+  elements: [{ type: "mrkdwn", text: "Changes show up on the website within seconds of saving." }],
 };
 
 export function eventModal(meta: ModalMeta, e?: SiteEvent) {

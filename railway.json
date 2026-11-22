@@ -1,0 +1,18 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "watchPatterns": [
+      "app/**",
+      "lib/**",
+      "themes/**",
+      "public/themes/**",
+      "scripts/**",
+      "package.json",
+      "package-lock.json",
+      "next.config.ts",
+      "tsconfig.json",
+      "postcss.config.mjs",
+      "railway.json"
+    ]
+  }
+}
