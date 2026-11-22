@@ -1,7 +1,13 @@
 /*
- * FALL: torn-paper collage, after the "FALL IN" collage.
- * Autumn foliage, black construction paper with torn edges, magazine pages,
- * cobalt scraps, and ransom-note letters cut from white and blue paper.
+ * FALL: clipping on a grid.
+ * Modern sans headings on solid label blocks (the Spring 2026 structure), a
+ * serif body, and the DAI logo palette: maroon, terracotta, peach. The old-paper
+ * side shows up once per section: one torn cream sheet over autumn foliage in
+ * the hero, a taped polaroid, a magazine scrap, torn link cards and photos.
+ * A little of the old ransom-note collage survives as distortion: the label
+ * blocks (title, section titles, date tiles) and the countdown are torn and
+ * knocked a few degrees off true, and cards sit slightly askew. Body copy,
+ * the tagline and buttons stay straight and readable.
  */
 /* Everything is scoped to this theme. A nested [data-theme] (a past event card
    from another quarter) gets its own theme's styles instead. */
@@ -9,56 +15,52 @@
   /* ---- palette ---------------------------------------------------------- */
   :scope {
     color-scheme: light;
-    --bg: #ebe3d2;
-    --surface: #f8f4ea;
-    --line: #c8baa0;
-    --fg: #1c1814;
-    --muted: #5e5448;
-    --accent: #c2471b;
-    --accent-fg: #fff8ef;
-    --glow-1: #d4572a;
-    --glow-2: #e0a526;
-    --glow-3: #7a2e1a;
+    --bg: #ebe4d6;
+    --surface: #f7f2e8;
+    --line: #d3c6ae;
+    --fg: #231a16;
+    --muted: #6a5a50;
+    --accent: #8a2a3b;
+    --accent-fg: #fde2d2;
+    --glow-1: #bd5c50;
+    --glow-2: #d98a5a;
+    --glow-3: #8a2a3b;
   }
 
   :scope {
+    /* Body is serif (the Study Session and Education posts). Headings keep the
+       site's default sans, like the DAI wordmark, so --font-heading is not set. */
     --font-body: var(--font-newsreader), Georgia, serif;
-    --font-heading: var(--font-abril), Georgia, serif;
-    --ink: #16130f;
+    --font-serif-display: var(--font-old-standard), Georgia, serif;
+    --ink: #231a16;
     --paper: #f6efe1;
-    --cobalt: #2f5bd3;
+    --maroon: #8a2a3b;
+    --terracotta: #bd5c50;
+    --peach: #fdbda0;
     --tape: rgb(236 222 178 / 0.85);
-    --paper-shadow: drop-shadow(1px 2px 0 rgb(40 20 8 / 0.18)) drop-shadow(0 6px 10px rgb(40 20 8 / 0.25));
+    --paper-shadow: drop-shadow(1px 2px 0 rgb(40 20 8 / 0.14)) drop-shadow(0 6px 10px rgb(40 20 8 / 0.18));
     /* Torn-edge strips; .torn stitches them around any box (see below). */
     --torn-top: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10' preserveAspectRatio='none'%3E%3Cpath d='M0.0 3.0 4.2 4.75 8.3 5.88 12.5 5.77 16.7 1.16 20.8 4.23 25.0 1.23 29.2 1.98 33.3 3.81 37.5 0.54 41.7 5.73 45.8 1.49 50.0 1.38 54.2 1.31 58.3 2.18 62.5 1.81 66.7 5.49 70.8 5.98 75.0 4.4 79.2 5.87 83.3 6.01 87.5 2.27 91.7 1.53 95.8 0.16 100.0 3.0 100 10 0 10Z'/%3E%3C/svg%3E");
-    --torn-bottom: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10' preserveAspectRatio='none'%3E%3Cpath d='M0.0 7.0 4.2 5.25 8.3 4.12 12.5 4.23 16.7 8.84 20.8 5.77 25.0 8.77 29.2 8.02 33.3 6.1899999999999995 37.5 9.46 41.7 4.27 45.8 8.51 50.0 8.620000000000001 54.2 8.69 58.3 7.82 62.5 8.19 66.7 4.51 70.8 4.02 75.0 5.6 79.2 4.13 83.3 3.99 87.5 7.73 91.7 8.47 95.8 9.84 100.0 7.0 100 0 0 0Z'/%3E%3C/svg%3E");
+    --torn-bottom: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10' preserveAspectRatio='none'%3E%3Cpath d='M0.0 7.0 4.2 5.25 8.3 4.12 12.5 4.23 16.7 8.84 20.8 5.77 25.0 8.77 29.2 8.02 33.3 6.19 37.5 9.46 41.7 4.27 45.8 8.51 50.0 8.62 54.2 8.69 58.3 7.82 62.5 8.19 66.7 4.51 70.8 4.02 75.0 5.6 79.2 4.13 83.3 3.99 87.5 7.73 91.7 8.47 95.8 9.84 100.0 7.0 100 0 0 0Z'/%3E%3C/svg%3E");
     --torn-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 100' preserveAspectRatio='none'%3E%3Cpath d='M3.0 0.0 4.75 4.2 5.88 8.3 5.77 12.5 1.16 16.7 4.23 20.8 1.23 25.0 1.98 29.2 3.81 33.3 0.54 37.5 5.73 41.7 1.49 45.8 1.38 50.0 1.31 54.2 2.18 58.3 1.81 62.5 5.49 66.7 5.98 70.8 4.4 75.0 5.87 79.2 6.01 83.3 2.27 87.5 1.53 91.7 0.16 95.8 3.0 100.0 10 100 10 0Z'/%3E%3C/svg%3E");
-    --torn-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 100' preserveAspectRatio='none'%3E%3Cpath d='M7.0 0.0 5.25 4.2 4.12 8.3 4.23 12.5 8.84 16.7 5.77 20.8 8.77 25.0 8.02 29.2 6.1899999999999995 33.3 9.46 37.5 4.27 41.7 8.51 45.8 8.620000000000001 50.0 8.69 54.2 7.82 58.3 8.19 62.5 4.51 66.7 4.02 70.8 5.6 75.0 4.13 79.2 3.99 83.3 7.73 87.5 8.47 91.7 9.84 95.8 7.0 100.0 0 100 0 0Z'/%3E%3C/svg%3E");
+    --torn-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 100' preserveAspectRatio='none'%3E%3Cpath d='M7.0 0.0 5.25 4.2 4.12 8.3 4.23 12.5 8.84 16.7 5.77 20.8 8.77 25.0 8.02 29.2 6.19 33.3 9.46 37.5 4.27 41.7 8.51 45.8 8.62 50.0 8.69 54.2 7.82 58.3 8.19 62.5 4.51 66.7 4.02 70.8 5.6 75.0 4.13 79.2 3.99 83.3 7.73 87.5 8.47 91.7 9.84 95.8 7.0 100.0 0 100 0 0Z'/%3E%3C/svg%3E");
   }
 
-  /* Paper grain over the whole page */
+  /* Faint paper grain over the whole page */
   body {
     background-color: var(--bg);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .25 0 0 0 0 .18 0 0 0 0 .1 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .25 0 0 0 0 .18 0 0 0 0 .1 0 0 0 .14 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   /* ---- torn edges ------------------------------------------------------------
-   * A box with hand-torn edges at any size: four jagged strips around the
-   * outside plus a solid middle. Shadows must come from a parent's
-   * `filter: drop-shadow()` because the mask would clip a box-shadow. */
+   * Only where a real collage piece would be: link cards, photos, scraps.
+   * Shadows come from a parent's `filter: drop-shadow()`, because the mask
+   * would clip a box-shadow. */
   .torn,
-  .card,
-  .countdown-box,
-  .section-title,
-  .date-tile,
-  .media,
-  .btn-primary,
-  .hero-eyebrow,
-  .hero-tagline,
-  .ransom,
-  .countdown-digit {
-    --t: 6px;
-    --len: 70px;
+  .link-card,
+  .media {
+    --t: 5px;
+    --len: 60px;
     mask:
       var(--torn-top) top left / var(--len) var(--t) repeat-x,
       var(--torn-bottom) bottom left / var(--len) var(--t) repeat-x,
@@ -66,91 +68,81 @@
       var(--torn-right) top right / var(--t) var(--len) repeat-y,
       linear-gradient(#000 0 0) center / calc(100% - 2 * var(--t) + 2px) calc(100% - 2 * var(--t) + 2px) no-repeat;
   }
-  .ransom,
-  .countdown-digit,
-  .btn-primary,
-  .hero-eyebrow { --t: 4px; --len: 34px; }
 
-  /* Parents that cast the paper shadows */
-  :scope:has(> .card),
-  li:has(> .card),
-  .countdown-wrap,
-  .hero-copy {
+  li:has(> .link-card),
+  :has(> .media) {
     filter: var(--paper-shadow);
   }
 
+  /* ---- chrome ---------------------------------------------------------------- */
   .banner {
-    background: var(--ink);
-    color: var(--paper);
-    font-family: var(--font-special-elite), monospace;
-    letter-spacing: 0.04em;
+    background: var(--maroon);
+    color: var(--peach);
   }
 
   .site-header {
     background: color-mix(in srgb, var(--bg) 94%, transparent);
-    border-bottom: 3px double var(--ink);
+    border-bottom: 1px solid var(--line);
   }
 
+  footer { border-top: 1px solid var(--line); }
+
   /* ---- hero ------------------------------------------------------------------ */
+  /* Autumn foliage with a light maroon wash so it sits with the brand colors. */
   .hero {
-    background: #3a1508 url("/themes/fall-2026/foliage.svg") center / 560px 560px;
+    background:
+      linear-gradient(rgb(110 30 40 / 0.22), rgb(110 30 40 / 0.22)),
+      #3a1508 url("/themes/fall-2026/foliage.svg") center / 560px 560px;
     padding-bottom: 1.5rem;
   }
 
+  /* "Fall Quarter 2026" in italic serif, as on Spring */
   .hero-eyebrow {
     border: 0;
     border-radius: 0;
-    padding: 0.35rem 0.8rem;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: var(--font-special-elite), monospace;
-    rotate: -2deg;
+    padding: 0;
+    background: none;
     backdrop-filter: none;
+    color: var(--ink);
+    font-family: var(--font-serif-display);
+    font-style: italic;
+    font-size: 1.15rem;
+    letter-spacing: 0;
+    text-transform: none;
   }
 
-  /* Ransom-note title: letters cut from white and cobalt paper */
+  /* Site title on a solid maroon label block with peach letters: the DAI logo */
   .hero-title {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.18em 0.45em;
-    font-size: clamp(2.6rem, 8.5vw, 5.25rem);
-    line-height: 1;
-    letter-spacing: 0;
+    font-size: clamp(2.8rem, 8vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
   }
-  .ransom-word {
-    display: inline-flex;
-    gap: 0.07em;
+  .hero-title-block {
+    padding: 0.05em 0.22em 0.08em;
+    background: var(--maroon);
+    color: var(--peach);
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
   }
-  .ransom {
-    display: inline-block;
-    padding: 0.1em 0.16em 0.04em;
-    background: var(--paper);
-    color: var(--ink);
-  }
-  .ransom-0 { font-family: var(--font-abril); rotate: -4deg; }
-  .ransom-1 { background: var(--cobalt); color: #fff; font-family: var(--font-old-standard); font-weight: 700; rotate: 3deg; translate: 0 0.06em; }
-  .ransom-2 { font-family: var(--font-old-standard); font-weight: 700; rotate: -2deg; }
-  .ransom-3 { background: var(--cobalt); color: #fff; font-family: var(--font-abril); rotate: 5deg; translate: 0 -0.04em; }
-  .ransom-4 { font-family: var(--font-special-elite); rotate: -5deg; translate: 0 0.04em; }
-  .ransom-5 { background: #fffaf0; font-family: var(--font-abril); font-style: italic; rotate: 2deg; }
 
   .hero-tagline {
-    display: inline-block;
-    max-width: 34rem;
-    padding: 0.75rem 1.1rem;
-    background: var(--paper);
+    max-width: 32rem;
     color: var(--ink);
+    font-family: var(--font-body);
     font-style: italic;
-    rotate: -0.6deg;
+    font-size: 1.3rem;
+    line-height: 1.45;
   }
 
+  /* The logo as a taped polaroid */
   .hero-logo {
     border-radius: 2px;
     border: 10px solid #fffdf7;
-    border-bottom-width: 36px;
+    border-bottom-width: 34px;
     box-sizing: content-box;
-    box-shadow: 0 10px 24px -8px rgb(20 8 2 / 0.6);
-    rotate: 4deg;
+    box-shadow: 0 10px 24px -8px rgb(20 8 2 / 0.55);
+    rotate: 3deg;
     overflow: visible;
   }
   .hero-logo::after {
@@ -158,140 +150,154 @@
     position: absolute;
     top: -14px;
     left: 50%;
-    width: 45%;
-    height: 28px;
+    width: 42%;
+    height: 26px;
     translate: -50% 0;
-    rotate: -6deg;
+    rotate: -5deg;
     background: var(--tape);
   }
 
-  /* ---- countdown: a torn clipping ------------------------------------------- */
+  /* ---- countdown --------------------------------------------------------------- */
   .countdown-box {
-    border: 0;
+    border: 1px solid var(--line);
     border-radius: 0;
-    background: var(--paper);
+    background: var(--surface);
     backdrop-filter: none;
-    rotate: -1deg;
   }
   .countdown-digit {
-    display: inline-block;
-    padding: 0.12em 0.2em 0.04em;
-    font-family: var(--font-abril);
-    font-weight: 400;
-    color: #fff;
-    background: var(--ink);
+    font-weight: 700;
+    color: var(--maroon);
+    font-variant-numeric: tabular-nums;
   }
-  .countdown-unit:nth-child(2) .countdown-digit { background: var(--cobalt); rotate: 2deg; font-family: var(--font-old-standard); font-weight: 700; }
-  .countdown-unit:nth-child(3) .countdown-digit { background: #fffaf0; color: var(--ink); outline: 1px solid rgb(0 0 0 / 0.1); rotate: -2deg; }
-  .countdown-unit:nth-child(4) .countdown-digit { background: var(--accent); rotate: 3deg; }
-  .countdown-label { font-family: var(--font-special-elite); color: var(--ink); }
+  .countdown-label {
+    font-family: var(--font-serif-display);
+    font-style: italic;
+    color: var(--muted);
+  }
 
   /* ---- sections, cards, buttons ---------------------------------------------- */
+  /* Solid label blocks, as on Spring */
   .section-title {
     display: inline-block;
-    padding: 0.45rem 1rem 0.4rem;
-    background: var(--ink);
-    color: var(--paper);
-    font-family: var(--font-special-elite), monospace;
-    letter-spacing: 0.22em;
-    rotate: -1.2deg;
+    padding: 0.3rem 0.65rem 0.35rem;
+    background: var(--maroon);
+    color: var(--accent-fg);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: -0.01em;
   }
 
   .card {
-    border: 0;
+    border: 1px solid var(--line);
     border-radius: 0;
+    background: var(--surface);
+  }
+
+  /* Link cards are scraps of paper: torn, no border */
+  .link-card {
+    border: 0;
     background: var(--paper);
   }
-  li:nth-child(odd) > .event-card { rotate: -0.4deg; }
-  li:nth-child(even) > .event-card { rotate: 0.5deg; }
-  .link-card { font-family: var(--font-special-elite), monospace; }
-  li:nth-child(odd) > .link-card { rotate: -0.4deg; }
-  li:nth-child(even) > .link-card { rotate: 0.5deg; }
-  .link-card:hover { color: var(--cobalt); }
+  .link-card:hover { color: var(--maroon); }
 
   .date-tile {
     border: 0;
     border-radius: 0;
     padding: 0.55rem 0;
-    background: var(--cobalt);
-    color: #fff;
-    rotate: -3deg;
+    background: var(--maroon);
+    color: var(--accent-fg);
   }
-  .date-tile > :first-child { color: #ffe3a8; font-family: var(--font-special-elite); }
-  .date-tile > :last-child { font-family: var(--font-abril); font-weight: 400; }
+  .date-tile > :first-child {
+    color: var(--peach);
+    font-family: var(--font-serif-display);
+    font-style: italic;
+    text-transform: none;
+  }
+  .date-tile > :last-child { font-weight: 700; }
 
-  /* Photos and flyers look torn out of a magazine */
+  /* Photos and flyers look clipped from a magazine */
   .media {
-    --t: 7px;
+    --t: 6px;
     border: 0;
     border-radius: 0;
-    rotate: 1.5deg;
+    rotate: 0.8deg;
   }
 
   .btn-primary {
     border-radius: 0;
-    padding: 0.45rem 1.1rem;
-    background: var(--cobalt);
-    color: #fff;
-    font-family: var(--font-special-elite), monospace;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    padding: 0.55rem 1.1rem;
+    background: var(--maroon);
+    color: var(--accent-fg);
+    font-weight: 600;
   }
-  .btn-primary:hover { opacity: 1; background: var(--ink); }
+  .btn-primary:hover { opacity: 1; background: var(--terracotta); }
   .btn-ghost {
-    border: 1.5px dashed var(--ink);
+    border: 1px solid var(--ink);
     border-radius: 0;
     color: var(--ink);
-    font-family: var(--font-special-elite), monospace;
   }
   .btn-ghost:hover { background: var(--paper); }
 
-  footer { border-top: 3px double var(--ink); }
-
   /* ---- hero decor -------------------------------------------------------------- */
 
-  /* Black construction paper sweeping across the left, with a torn edge */
-  .fall-black {
+  /* A torn cream sheet over the foliage, holding the hero copy */
+  .fall-sheet {
     position: absolute;
     inset: 0 auto 0 0;
-    width: 66%;
+    width: 64%;
     height: 100%;
-    filter: drop-shadow(4px 0 0 #efe3cb) drop-shadow(3px 6px 10px rgb(10 4 0 / 0.55));
+    filter: drop-shadow(3px 0 0 #d9c9a8) drop-shadow(4px 8px 12px rgb(30 8 4 / 0.45));
   }
   @media (max-width: 1023px) {
-    .fall-black { width: 100%; }
+    .fall-sheet { width: 100%; }
+  }
+  /* Phones: push the torn edge mostly off-screen so it never crosses the copy */
+  @media (max-width: 639px) {
+    .fall-sheet { width: 175%; }
   }
 
-  /* A page torn from a magazine */
+  /* A magazine scrap tucked behind the polaroid */
   .fall-magazine {
     position: absolute;
-    padding: 1.2rem 1.4rem;
+    padding: 1.1rem 1.3rem;
     background: #f3ece0;
     color: #2b241c;
-    font-family: var(--font-old-standard), Georgia, serif;
-    font-size: 0.78rem;
+    font-family: var(--font-serif-display);
+    font-size: 0.76rem;
     line-height: 1.35;
     text-align: justify;
     hyphens: auto;
-    --t: 8px;
+    --t: 7px;
     --len: 80px;
   }
   .fall-magazine p + p { margin-top: 0.5rem; }
   .fall-magazine .dropcap {
     float: left;
-    font-family: var(--font-abril);
-    font-size: 2.6rem;
+    font-size: 2.5rem;
+    font-weight: 700;
     line-height: 0.8;
     margin: 0.15rem 0.3rem 0 0;
-    color: var(--accent);
+    color: var(--maroon);
   }
-  .fall-scrap {
+
+  /* Flat cut-paper circle, after the Refresh posts */
+  .fall-dot {
     position: absolute;
-    background: var(--cobalt);
-    --t: 5px;
-    --len: 40px;
+    border-radius: 50%;
+    background: var(--terracotta);
   }
-  .fall-shadow { filter: drop-shadow(2px 5px 6px rgb(10 4 0 / 0.45)); }
+
+  /* Hand-drawn arrow, after the Event no.1 Recap posts */
+  .fall-arrow {
+    position: absolute;
+    fill: none;
+    stroke: #fff8ef;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .fall-shadow { filter: drop-shadow(2px 5px 6px rgb(10 4 0 / 0.4)); }
 
   /* The hero's bottom edge, torn away to reveal the page */
   .fall-tear {
@@ -309,7 +315,40 @@
     mask: var(--torn-top) 37px 0 / 110px 22px repeat-x;
   }
 
+
+  /* ---- kept from the collage version: torn, slightly-off label blocks -------- */
+  .hero-title-block,
+  .section-title,
+  .date-tile,
+  .countdown-box {
+    --t: 4px;
+    --len: 34px;
+    mask:
+      var(--torn-top) top left / var(--len) var(--t) repeat-x,
+      var(--torn-bottom) bottom left / var(--len) var(--t) repeat-x,
+      var(--torn-left) top left / var(--t) var(--len) repeat-y,
+      var(--torn-right) top right / var(--t) var(--len) repeat-y,
+      linear-gradient(#000 0 0) center / calc(100% - 2 * var(--t) + 2px) calc(100% - 2 * var(--t) + 2px) no-repeat;
+  }
+  .countdown-box { --t: 6px; --len: 70px; rotate: -0.8deg; }
+  .countdown-wrap { filter: var(--paper-shadow); }
+
+  /* Tilted, so give the tagline under it a little more room */
+  .hero-title { rotate: -1.5deg; transform-origin: left center; margin-bottom: 0.2em; }
+  .section-title { rotate: -1.2deg; }
+  .date-tile { rotate: -3deg; }
+
+  /* Every other card and link scrap sits a little askew */
+  li:nth-child(odd) > .event-card,
+  li:nth-child(odd) > .link-card { rotate: -0.4deg; }
+  li:nth-child(even) > .event-card,
+  li:nth-child(even) > .link-card { rotate: 0.5deg; }
+
+  /* Countdown digits cut from alternating paper, as before */
+  .countdown-digit { display: inline-block; padding: 0.1em 0.18em 0.02em; background: var(--maroon); color: var(--peach); }
+  .countdown-unit:nth-child(2) .countdown-digit { background: var(--terracotta); color: #fff; rotate: 2deg; }
+  .countdown-unit:nth-child(3) .countdown-digit { background: var(--paper); color: var(--maroon); outline: 1px solid var(--line); rotate: -2deg; }
+  .countdown-unit:nth-child(4) .countdown-digit { rotate: 3deg; }
+
   .content-grid { padding-top: 2.5rem; }
-
 }
-
