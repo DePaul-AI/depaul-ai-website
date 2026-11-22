@@ -93,18 +93,14 @@ const leafBlur = `<filter id="leafblur"><feGaussianBlur stdDeviation="2.5"/></fi
 
 const logos = {};
 
-// WINTER: liquid chrome color on the wordmark, over a cyber grid.
+// WINTER: cobalt print. White wordmark on an ink-blue tile with a halftone screen.
 logos["winter-2027"] = svg(`
-  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c1526"/><stop offset="1" stop-color="#03060c"/></linearGradient>
-  <radialGradient id="halo" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#3b82f6" stop-opacity=".5"/><stop offset="1" stop-color="#3b82f6" stop-opacity="0"/></radialGradient>
-  <linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#ffffff"/><stop offset=".3" stop-color="#d4deec"/><stop offset=".47" stop-color="#76869f"/><stop offset=".52" stop-color="#2a3650"/><stop offset=".57" stop-color="#eef4ff"/><stop offset=".8" stop-color="#9fc3f2"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
-  <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#8fb4e6" stroke-width="1" opacity=".14"/></pattern>`, `
-  <rect width="512" height="512" fill="url(#bg)"/>
-  <rect width="512" height="512" fill="url(#grid)"/>
-  <circle cx="256" cy="256" r="220" fill="url(#halo)"/>
-  ${[[40, 40, 1, 1], [472, 40, -1, 1], [40, 472, 1, -1], [472, 472, -1, -1]].map(([x, y, sx, sy]) => `<path d="M${x} ${y + 34 * sy}V${y}H${x + 34 * sx}" fill="none" stroke="#9cc4f5" stroke-width="3" opacity=".75"/>`).join("")}
-  ${wordmark("url(#chrome)")}`);
+  <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="8" cy="8" r="2.2" fill="#9fb0ff" opacity=".35"/></pattern>`, `
+  <rect width="512" height="512" fill="#2a33c9"/>
+  <rect width="512" height="512" fill="url(#dots)"/>
+  <rect x="40" y="420" width="64" height="16" fill="#00a8ff"/><rect x="112" y="420" width="24" height="16" fill="#9fb0ff"/>
+  <rect x="408" y="76" width="64" height="16" fill="#9fb0ff"/><rect x="448" y="100" width="24" height="16" fill="#00a8ff"/>
+  ${wordmark("#ffffff")}`);
 
 // SPRING: color explosion behind the wordmark (a remix of the original pastel logo).
 {
