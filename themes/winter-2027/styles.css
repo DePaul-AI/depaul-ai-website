@@ -155,7 +155,8 @@
   }
 
   .hero-logo {
-    border-radius: 12%;
+    /* Same corner as the logo art (rx 104 of 512), so the hard shadow hugs it */
+    border-radius: calc(104 / 512 * 100%);
     box-shadow: 10px 10px 0 var(--peri), 10px 10px 0 2px var(--ink);
     animation: none;
   }
