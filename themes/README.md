@@ -49,4 +49,7 @@ public/themes/fall-2026/
   Tailwind's theme colors (`bg-surface`, `text-muted`, …) rather than hard-coding colors in markup.
 - **Fonts** are loaded in `app/fonts.ts`; a theme picks them by setting `--font-body` and
   `--font-heading` in its palette block.
+  A theme can also bring its own: put `.woff2` files in `public/themes/<quarter>/fonts/`
+  and declare them with `@font-face` at the top of its `styles.css` (see `winter-2027`).
+  Name the family something unique so it can't clash with another quarter's.
 - **Old themes stay.** Don't delete a past quarter's folder: its past events still use it.
