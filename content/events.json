@@ -70,5 +70,15 @@
     "location": "Arts & Letter 409",
     "description": "DAI Spaces is back this Thursday, October 15th from 4:30 PM in Arts & Letters 409. This week we’re talking education: what does the future hold for learning with AI?\nWhether you’re a student, a teacher, or just curious, this is your space to talk about it. No experience needed, come as you are!",
     "image": "/uploads/spaces-education-what-does-the-future-ho-2qglcr.png"
+  },
+  {
+    "id": "qbraid-quantum-developer-day-2026-quantu-neqj",
+    "title": "qBraid: Quantum Developer Day 2026: Quantum in Production",
+    "start": "2026-12-07T18:00:00.000Z",
+    "end": "2026-12-08T00:00:00.000Z",
+    "location": "Aon Center",
+    "description": "Join DePaul AI board as they trek to this Summit, use code DEPAUL26 for free entry",
+    "link": "https://luma.com/u6deuegi?utm_campaign=quantum-developer-day-2026&utm_medium=email&utm_source=depaul-cdm",
+    "image": "/media/qbraid-quantum-developer-day-2026-quantu-yqdr87.png"
   }
 ]
