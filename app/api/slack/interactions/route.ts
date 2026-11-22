@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     after(async () => {
       try {
         const done = await result.apply();
-        await notify(meta.channel, user, `:white_check_mark: <@${user}> ${done}. Live on <${siteUrl()}|the site> in a couple of minutes.`);
+        await notify(meta.channel, user, `:white_check_mark: <@${user}> ${done}. It’s live on <${siteUrl()}|the site> now.`);
       } catch (err) {
         await notify(undefined, user, `:warning: Your website change didn't save: ${(err as Error).message}`);
       }

@@ -16,10 +16,19 @@ import { CONTENT_FILES, type ContentData, type ContentKey } from "./schema";
 
 type Mutator<K extends ContentKey> = (current: ContentData[K]) => ContentData[K];
 
-/** A binary file to add alongside a content change, e.g. an uploaded image. */
-export type Upload = { publicPath: string; bytes: Buffer };
+/**
+ * A binary file to add alongside a content change, e.g. an uploaded image.
+ * It's stored in git at public/uploads/<file> and served at /media/<file>
+ * (app/media/[file]/route.ts), which works without a redeploy.
+ */
+export type Upload = { file: string; bytes: Buffer };
+
+export const mediaUrl = (file: string) => `/media/${file}`;
 
 export type CommitResult = { commitUrl?: string };
+
+/** Whether there's anywhere to read live content from (GitHub, or local files in dev). */
+export const canReadLive = () => isLocalStore() || !!(process.env.GITHUB_TOKEN && process.env.GITHUB_REPO);
 
 const isLocalStore = () =>
   process.env.CONTENT_STORE === "local" ||
@@ -47,16 +56,17 @@ export async function updateContent<K extends ContentKey>(
     const current = schema.parse(JSON.parse(await fs.readFile(localPath(key), "utf8"))) as ContentData[K];
     const next = schema.parse(mutate(current));
     for (const u of uploads) {
-      await fs.writeFile(path.join(process.cwd(), "public", "uploads", path.basename(u.publicPath)), u.bytes);
+      await fs.writeFile(path.join(process.cwd(), "public", "uploads", path.basename(u.file)), u.bytes);
     }
     await fs.writeFile(localPath(key), serialize(next));
+    await refresh();
     return {};
   }
 
   // Upload image blobs once; they don't change between retries.
   const blobs = await Promise.all(
     uploads.map(async (u) => ({
-      path: `public${u.publicPath}`,
+      path: `public/uploads/${path.basename(u.file)}`,
       sha: await createBlob(u.bytes.toString("base64"), "base64"),
     })),
   );
@@ -89,10 +99,39 @@ export async function updateContent<K extends ContentKey>(
     });
 
     const res = await github(`git/refs/heads/${branch()}`, "PATCH", { sha: created.sha, force: false });
-    if (res.ok) return { commitUrl: created.html_url };
+    if (res.ok) {
+      await refresh();
+      return { commitUrl: created.html_url };
+    }
     if (res.status === 422 && attempt < 3) continue;
     throw new Error(`GitHub update failed (${res.status}): ${await res.text()}`);
   }
+}
+
+/** Tell the running site to show the change right away (no redeploy needed). */
+async function refresh() {
+  const { refreshSite } = await import("./live");
+  refreshSite();
+}
+
+/**
+ * An uploaded file's bytes: from disk when it was deployed with the site
+ * (or in local mode), otherwise straight from GitHub.
+ */
+export async function readUpload(file: string): Promise<Buffer | null> {
+  const name = path.basename(file);
+  try {
+    return await fs.readFile(path.join(process.cwd(), "public", "uploads", name));
+  } catch {
+    if (isLocalStore()) return null;
+  }
+  const res = await github(
+    `contents/public/uploads/${encodeURIComponent(name)}?ref=${encodeURIComponent(branch())}`,
+    "GET",
+    undefined,
+    "application/vnd.github.raw+json",
+  );
+  return res.ok ? Buffer.from(await res.arrayBuffer()) : null;
 }
 
 function serialize(data: unknown) {
@@ -125,7 +164,7 @@ async function gh<T>(endpoint: string, method = "GET", body?: unknown): Promise<
   return res.json() as Promise<T>;
 }
 
-function github(endpoint: string, method = "GET", body?: unknown) {
+function github(endpoint: string, method = "GET", body?: unknown, accept = "application/vnd.github+json") {
   const repo = process.env.GITHUB_REPO;
   const token = process.env.GITHUB_TOKEN;
   if (!repo || !token) throw new Error("GITHUB_REPO and GITHUB_TOKEN must be set");
@@ -134,7 +173,7 @@ function github(endpoint: string, method = "GET", body?: unknown) {
     method,
     cache: "no-store",
     headers: {
-      Accept: "application/vnd.github+json",
+      Accept: accept,
       Authorization: `Bearer ${token}`,
       "X-GitHub-Api-Version": "2022-11-28",
       "Content-Type": "application/json",

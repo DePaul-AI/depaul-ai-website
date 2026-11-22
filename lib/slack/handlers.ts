@@ -1,6 +1,6 @@
 import "server-only";
 import { z } from "zod";
-import { readContent, updateContent } from "../content/store";
+import { mediaUrl, readContent, updateContent, type Upload } from "../content/store";
 import { makeId } from "../content/ids";
 import {
   announcementSchema,
@@ -218,7 +218,7 @@ export function handleSubmission(
           const upload = await fetchSlackImage(file.id, `logo-${theme}`);
           await updateContent(
             "site",
-            (site) => ({ ...site, logos: { ...site.logos, [theme]: upload.publicPath } }),
+            (site) => ({ ...site, logos: { ...site.logos, [theme]: mediaUrl(upload.file) } }),
             `content: new ${theme} logo ${by}`,
             [upload],
           );
@@ -416,8 +416,8 @@ function imageChoice(values: StateValues, meta: ModalMeta): { fileId?: string; r
   return { fileId: file?.id ?? meta.fileId, remove: checked(values, "remove_image") };
 }
 
-function resolveImage(previous: string | undefined, upload: { publicPath: string } | undefined, remove: boolean) {
-  if (upload) return upload.publicPath;
+function resolveImage(previous: string | undefined, upload: Upload | undefined, remove: boolean) {
+  if (upload) return mediaUrl(upload.file);
   return remove ? undefined : previous;
 }
 

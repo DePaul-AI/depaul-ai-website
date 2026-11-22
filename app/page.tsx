@@ -1,5 +1,6 @@
 import { IconArrowUpRight, IconSpeakerphone } from "@tabler/icons-react";
-import { activeCountdown, site, sortedPosts, splitEvents } from "@/lib/content";
+import { activeCountdown, sortedPosts, splitEvents } from "@/lib/content";
+import { getContent } from "@/lib/content/live";
 import { longDate, time } from "@/lib/format";
 import { THEMES } from "@/themes";
 import { HERO } from "@/themes/hero";
@@ -10,14 +11,17 @@ import EventsTabs from "./components/EventsTabs";
 import PostItem from "./components/PostItem";
 import Socials from "./components/Socials";
 
-// Content only changes on deploy, but "upcoming" vs "past" depends on the
-// clock — regenerate the page every 15 minutes so it stays accurate.
+// Content changes refresh the page immediately (see lib/content/live.ts).
+// "Upcoming" vs "past" also depends on the clock, so the page regenerates
+// every 15 minutes regardless.
 export const revalidate = 900;
 
-export default function Home() {
-  const { upcoming, past } = splitEvents();
-  const countdown = activeCountdown();
-  const posts = sortedPosts().slice(0, 10);
+export default async function Home() {
+  const content = await getContent();
+  const { site } = content;
+  const { upcoming, past } = splitEvents(content.events);
+  const countdown = activeCountdown(content);
+  const posts = sortedPosts(content.posts).slice(0, 10);
   const theme = THEMES[site.theme];
   const { Decor, Title } = HERO[site.theme] ?? {};
 
@@ -39,7 +43,7 @@ export default function Home() {
       <header className="site-header">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
           <a href="#top" className="brand-name flex items-center gap-2.5">
-            <Logo className="relative size-8 overflow-hidden rounded-lg" sizes="32px" />
+            <Logo site={site} className="relative size-8 overflow-hidden rounded-lg" sizes="32px" />
             {site.hero.title}
           </a>
           <nav className="flex items-center gap-1 text-sm sm:gap-4">
@@ -94,7 +98,7 @@ export default function Home() {
               )}
             </div>
 
-            <Logo className="hero-logo order-first lg:order-none" sizes="(min-width: 1024px) 288px, 160px" priority />
+            <Logo site={site} className="hero-logo order-first lg:order-none" sizes="(min-width: 1024px) 288px, 160px" priority />
           </div>
         </section>
 

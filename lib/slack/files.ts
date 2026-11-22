@@ -19,7 +19,7 @@ export function isUsableImage(f: { mimetype?: string; size?: number }) {
 
 /**
  * Downloads an image someone uploaded in Slack and returns it ready to commit
- * at /uploads/<name>-<random>.<ext>.
+ * as <name>-<random>.<ext> (served at /media/<file>).
  */
 export async function fetchSlackImage(fileId: string, name: string): Promise<Upload> {
   const info = await slack<{ file: SlackFile }>("files.info", { file: fileId });
@@ -39,5 +39,5 @@ export async function fetchSlackImage(fileId: string, name: string): Promise<Upl
 
   const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "image";
   const suffix = Math.random().toString(36).slice(2, 8);
-  return { publicPath: `/uploads/${slug}-${suffix}.${EXT[file.mimetype]}`, bytes };
+  return { file: `${slug}-${suffix}.${EXT[file.mimetype]}`, bytes };
 }
