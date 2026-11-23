@@ -20,18 +20,18 @@ const CONTENT_TAG = "content";
 // invalid, the site keeps serving this instead of erroring.
 let lastGood: ContentData | null = null;
 
+async function readAll(): Promise<ContentData> {
+  const [site, events, posts] = await Promise.all([readContent("site"), readContent("events"), readContent("posts")]);
+  return { site, events, posts };
+}
+
 const loadContent = unstable_cache(
   async (): Promise<ContentData> => {
     // No GitHub token (e.g. building on a machine without one): use the
     // content that was built with the site.
     if (!canReadLive()) return bundledContent;
     try {
-      const [site, events, posts] = await Promise.all([
-        readContent("site"),
-        readContent("events"),
-        readContent("posts"),
-      ]);
-      lastGood = { site, events, posts };
+      lastGood = await readAll();
       return lastGood;
     } catch (err) {
       console.error("Couldn't load live content; serving the last good version:", err);
@@ -43,6 +43,9 @@ const loadContent = unstable_cache(
 );
 
 export function getContent(): Promise<ContentData> {
+  // In `npm run dev`, skip the cache so hand-edits to content/*.json show
+  // up on the next refresh.
+  if (process.env.NODE_ENV === "development" && canReadLive()) return readAll();
   return loadContent();
 }
 

@@ -1,4 +1,5 @@
-import { IconArrowUpRight, IconSpeakerphone } from "@tabler/icons-react";
+import Link from "next/link";
+import { IconArrowRight, IconArrowUpRight } from "@tabler/icons-react";
 import { activeCountdown, sortedPosts, splitEvents } from "@/lib/content";
 import { getContent } from "@/lib/content/live";
 import { longDate, time } from "@/lib/format";
@@ -9,51 +10,31 @@ import Logo from "./components/Logo";
 import EventItem from "./components/EventItem";
 import EventsTabs from "./components/EventsTabs";
 import PostItem from "./components/PostItem";
-import Socials from "./components/Socials";
+import { Banner, SectionTitle, SiteFooter, SiteHeader } from "./components/SiteChrome";
 
 // Content changes refresh the page immediately (see lib/content/live.ts).
 // "Upcoming" vs "past" also depends on the clock, so the page regenerates
 // every 15 minutes regardless.
 export const revalidate = 900;
 
+/** How many updates the homepage shows before "View all updates". */
+const HOME_POSTS = 3;
+
 export default async function Home() {
   const content = await getContent();
   const { site } = content;
   const { upcoming, past } = splitEvents(content.events);
   const countdown = activeCountdown(content);
-  const posts = sortedPosts(content.posts).slice(0, 10);
+  const allPosts = sortedPosts(content.posts);
+  // The homepage shows the newest few; the rest live on /updates.
+  const posts = allPosts.slice(0, HOME_POSTS);
   const theme = THEMES[site.theme];
   const { Decor, Title } = HERO[site.theme] ?? {};
 
   return (
     <>
-      {site.announcement && (
-        <div className="banner">
-          <IconSpeakerphone size={16} className="mr-1.5 inline -translate-y-px" />
-          {site.announcement.link ? (
-            <a href={site.announcement.link} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
-              {site.announcement.text}
-            </a>
-          ) : (
-            site.announcement.text
-          )}
-        </div>
-      )}
-
-      <header className="site-header">
-        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
-          <a href="#top" className="brand-name flex items-center gap-2.5">
-            <Logo site={site} className="relative size-8 overflow-hidden rounded-lg" sizes="32px" />
-            {site.hero.title}
-          </a>
-          <nav className="flex items-center gap-1 text-sm sm:gap-4">
-            <a href="#events" className="hidden text-muted hover:text-fg sm:inline">Events</a>
-            <a href="#updates" className="hidden text-muted hover:text-fg sm:inline">Updates</a>
-            <a href="#links" className="hidden text-muted hover:text-fg sm:inline">Links</a>
-            <Socials socials={site.socials} />
-          </nav>
-        </div>
-      </header>
+      <Banner site={site} />
+      <SiteHeader site={site} />
 
       <main id="top">
         {/* Hero */}
@@ -158,11 +139,18 @@ export default async function Home() {
             <section id="updates">
               <SectionTitle>Updates</SectionTitle>
               {posts.length ? (
-                <ul className="-mt-5 divide-y divide-line">
-                  {posts.map((p) => (
-                    <PostItem key={p.id} post={p} />
-                  ))}
-                </ul>
+                <>
+                  <ul className="-mt-5 divide-y divide-line">
+                    {posts.map((p) => (
+                      <PostItem key={p.id} post={p} />
+                    ))}
+                  </ul>
+                  {allPosts.length > HOME_POSTS && (
+                    <Link href="/updates" className="btn-ghost mt-4">
+                      View all {allPosts.length} updates <IconArrowRight size={15} />
+                    </Link>
+                  )}
+                </>
               ) : (
                 <p className="text-muted">No updates yet.</p>
               )}
@@ -171,16 +159,7 @@ export default async function Home() {
         </div>
       </main>
 
-      <footer className="border-t border-line">
-        <div className="mx-auto flex max-w-5xl flex-col items-start justify-between gap-4 px-4 py-8 text-sm text-muted sm:flex-row sm:items-center sm:px-6">
-          <p>DePaul AI · a student organization at DePaul University, Chicago</p>
-          <Socials socials={site.socials} />
-        </div>
-      </footer>
+      <SiteFooter site={site} />
     </>
   );
-}
-
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h2 className="section-title">{children}</h2>;
 }
